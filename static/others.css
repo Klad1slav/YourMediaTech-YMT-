@@ -1,0 +1,15 @@
+body{
+    background-color: #1D1D1D;
+
+}
+header, footer{
+    background-color: #36454F;
+}
+header{
+    padding: 10px;
+}
+footer{
+    position:absolute;
+    bottom:0;
+    width:100%;
+}
