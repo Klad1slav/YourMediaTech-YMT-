@@ -13,11 +13,13 @@
     <link href="{%static "others.css"%}" rel="stylesheet">
     <link href="{%static "text.css"%}" rel="stylesheet">
     <link href="{%static "buttons.css"%}" rel="stylesheet">
+    {%block css_files%}
+    {%endblock%}
 </head>
 <body>
     <header>
         <div class="container-fluid d-flex align-items-center justify-content-between">
-            <h1 class="mb-0">Your MediaTeck</h1>
+            <h1 class="mb-0">Your MediaTheck</h1>
             <div>
                 <button type="button" class="btn btn-primary me-2">Log in</button>
                 <button type="button" class="btn btn-primary">
@@ -28,7 +30,10 @@
             </div>
         </div>
     </header>
-    {% block content %}{% endblock %}
+    <div class="wrapper">
+        {% block content %}
+        {% endblock %}
+    </div>
     <footer>
             <nav class="nav justify-content-center p-3">
                 <p>Was developed by 1-18-20-5-13Bga & Klad1slav</p>
