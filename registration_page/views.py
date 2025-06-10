@@ -10,6 +10,8 @@ def register_view(request):
             user = form.save()
             login(request, user)  # Optional: Log the user in after register
             return redirect("welcome_page")  # Change "home" to your desired page
+        else:
+            print(form.errors) #Add this temporarily to see why it's failing
     else:
         form = RegisterForm()
     return render(request, "registration_page/register.html", {"form": form})
