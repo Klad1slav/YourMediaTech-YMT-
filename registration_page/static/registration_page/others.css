@@ -7,3 +7,13 @@
     box-shadow: 0 4px 10px rgba(243, 3, 3, 0.1);
     text-align: center;
 }
+
+.login-container {
+    background-color: #36454F;
+    padding: 30px;
+    width: 650px;
+    margin: 100px auto; 
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(243, 3, 3, 0.1);
+    text-align: center;
+}

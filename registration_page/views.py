@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import LoginForm 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 
@@ -15,6 +17,23 @@ def register_view(request):
     else:
         form = RegisterForm()
     return render(request, "registration_page/register.html", {"form": form})
+
+
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)  # Optional: Log the user in after log in
+            return redirect("welcome_page")  # Change "home" to your desired page
+        else:
+            print(form.errors) #Add this temporarily to see why it's failing
+    else:
+        form = LoginForm()
+    return render(request, "registration_page/login.html", {"form": form})
+
+
+
 
 
 @login_required
