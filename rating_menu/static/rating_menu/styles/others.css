@@ -1,0 +1,15 @@
+.layout {
+    display: flex;
+    min-height: 85vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #434B51;
+}
+
+.main-content {
+    padding: 2rem;
+    background: #1D1D1D;
+    color: #fff;
+}

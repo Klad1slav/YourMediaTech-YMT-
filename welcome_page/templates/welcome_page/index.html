@@ -1,5 +1,17 @@
 {% extends "base.html" %}
+{%load static%}
+
+{%block css_files%}
+    <link rel="stylesheet" href="{%static "welcome_page/styles.css"%}">
+{%endblock%}
+
+{%block profillogin%}
+        <button type="button" class="btn btn-primary me-2">Log in</button>
+{%endblock%}
 
 {%block content%}
-    <h1>YMT</h1>
+    <div id="main-div">
+        <h1 id="logo">YMT</h1>
+        <h2 id="sub_logo">Your media library</h2>
+    </div>
 {%endblock%}

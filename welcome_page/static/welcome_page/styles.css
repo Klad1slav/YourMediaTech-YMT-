@@ -1,0 +1,14 @@
+#main-div{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+}
+#logo{
+    font-size:15rem;
+}
+#sub_logo{
+    color: #DBDBDB;
+    font-size:5rem;
+}
