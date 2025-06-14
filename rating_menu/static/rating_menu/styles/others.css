@@ -12,4 +12,10 @@
     padding: 2rem;
     background: #1D1D1D;
     color: #fff;
+    width: 100%;
+}
+.media-content{
+    width: 100%;
+    background-color: #434B51;
+    min-height: 10rem;
 }

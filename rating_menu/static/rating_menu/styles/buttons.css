@@ -1,0 +1,6 @@
+#header_buttons {
+    flex-direction: column;
+}
+.btn-success{
+    padding-left: 1rem;
+}
