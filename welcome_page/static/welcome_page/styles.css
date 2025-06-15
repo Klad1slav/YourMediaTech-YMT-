@@ -1,0 +1,13 @@
+#main-div{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+}
+#logo{
+    font-size:15rem;
+}
+#sub_logo{
+    font-size:5rem;
+}

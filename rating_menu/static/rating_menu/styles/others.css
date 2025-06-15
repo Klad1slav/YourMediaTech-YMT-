@@ -1,0 +1,22 @@
+.layout {
+    display: flex;
+    min-height: 85vh;
+}
+
+.sidebar {
+    width: 200px;
+    background: #434B51;
+}
+
+.main-content {
+    padding: 2rem;
+    background: #1D1D1D;
+    color: #fff;
+    width: 100%;
+}
+.media-content{
+    background-color: #434B51;
+    min-height: 10rem;
+    margin: 0;
+    margin-top: 1rem;
+}

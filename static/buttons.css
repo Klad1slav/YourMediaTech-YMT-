@@ -6,3 +6,19 @@
     background-color: #DBDBDB !important;
     color: #1D1D1D !important;
 }
+#header_buttons {
+    display: flex;
+    flex-direction: row;         /* Optional: space between buttons */
+    width: 100%;
+}
+
+#header_buttons button {
+    background-color:#434B51;
+    flex: 1 1 0;
+    width: 100%;
+    border-radius: 0;
+}
+#header_buttons button:hover {
+    background-color: #92AEC0 !important;
+    color: #DBDBDB !important;
+}

@@ -1,7 +1,16 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 body{
     background-color: #1D1D1D;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 
 }
+
 header, footer{
     background-color: #36454F;
 }
@@ -9,7 +18,10 @@ header{
     padding: 10px;
 }
 footer{
-    position:absolute;
-    bottom:0;
     width:100%;
+}
+.wrapper {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
 }

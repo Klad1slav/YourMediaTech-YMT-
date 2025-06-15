@@ -1,0 +1,19 @@
+#recommendations {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.film-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 3rem;
+    margin-top: 4rem;
+}
+
+.name{
+    margin-bottom: 3rem;
+    color:#DBDBDB;
+}
