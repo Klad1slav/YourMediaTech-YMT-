@@ -26,4 +26,4 @@ urlpatterns = [
     
 
 # path("reg/", registration_page.views.register_view, name="signin"),
-#     path("login/", registration_page.views.login_view, name="login"),
+# path("login/", registration_page.views.login_view, name="login"),

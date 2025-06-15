@@ -19,7 +19,7 @@
         <h2>Registration</h2>
     {% csrf_token %}
     <div class="reg_field">
-        <label for="id_username" class="form-label">Username</label>
+        <label for="id_username" class="form-label"></label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-person"></i></span>
           {{ form.username }}
@@ -27,7 +27,7 @@
       </div>
       
     <div class="reg_field">
-        <label for="id_email" class="form-label">Email</label>
+        <label for="id_email" class="form-label"></label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-envelope"></i></span>
           {{ form.email }}
@@ -35,7 +35,7 @@
       </div>
       
       <div class="reg_field">
-        <label for="id_password1" class="form-label">Password</label>
+        <label for="id_password1" class="form-label"></label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-lock"></i></span>
           {{ form.password1 }}
@@ -43,7 +43,7 @@
       </div>
       
       <div class="reg_field">
-        <label for="id_password2" class="form-label">Confirm Password</label>
+        <label for="id_password2" class="form-label"></label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
           {{ form.password2 }}

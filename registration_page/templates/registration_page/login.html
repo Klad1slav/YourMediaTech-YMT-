@@ -19,7 +19,7 @@
         {{ form.non_field_errors }}
 
     <div class="login_field">
-        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+        <label for="{{ form.username.id_for_label }}" class="form-label"></label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-person"></i></span>
           {{ form.username }}
@@ -27,7 +27,7 @@
       </div>
       
       <div class="login_field">
-        <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+        <label for="{{ form.password.id_for_label }}" class="form-label"></label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-lock"></i></span>
           {{ form.password }}
@@ -35,7 +35,7 @@
       </div>
       
       
-      <button type="submit" class="btn btn-success">Log in</button>
+      <button type="submit" class="btn btn-success" name="btn-s">Log in</button>
     </form>
 </div>
 
