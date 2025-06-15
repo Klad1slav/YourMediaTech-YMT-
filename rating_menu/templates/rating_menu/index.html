@@ -9,11 +9,17 @@
 {%block content%}
 <div class="layout">
     <nav class="sidebar">
-        <ul>
-            <li><a href="#">Menu 1</a></li>
-            <li><a href="#">Menu 2</a></li>
-            <li><a href="#">Menu 3</a></li>
-        </ul>
+        <div class="dropdown show">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Dropdown link
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+        </div>
         {%include "includes/header_buttons.html"%} 
     </nav>
     <main class="main-content">
@@ -26,8 +32,21 @@
             <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="search-icon">
             <button type="button" class="btn btn-success">Add new</button>
         </div>
+
         <div class="media-content">
         </div>
+
+        <div class="media-content">
+        </div>
+                <div class="media-content">
+        </div>
+                <div class="media-content">
+        </div>
+                <div class="media-content">
+        </div>
+                <div class="media-content">
+        </div>
+        
     </main>
 </div>
 {%endblock%}
