@@ -24,6 +24,11 @@
           <span class="input-group-text"><i class="bi bi-person"></i></span>
           {{ form.username }}
         </div>
+        {% if form.password.errors %}
+        <div class="text-danger">
+            {{ form.password.errors }}
+        </div>
+        {% endif %}
       </div>
       
       <div class="login_field">
@@ -32,6 +37,11 @@
           <span class="input-group-text"><i class="bi bi-lock"></i></span>
           {{ form.password }}
         </div>
+        {% if form.password.errors %}
+        <div class="text-danger">
+            {{ form.password.errors }}
+        </div>
+        {% endif %}
       </div>
       
       

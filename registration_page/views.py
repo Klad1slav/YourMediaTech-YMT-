@@ -11,7 +11,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)  # Optional: Log the user in after register
-            return redirect("welcome_page")  # Change "home" to your desired page
+            return redirect("home")  # Change "home" to your desired page
         else:
             print(form.errors) #Add this temporarily to see why it's failing
     else:
@@ -25,7 +25,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)  # Optional: Log the user in after log in
-            return redirect("welcome_page")  # Change "home" to your desired page
+            return redirect("home")  # Change "home" to your desired page
         else:
             print(form.errors) #Add this temporarily to see why it's failing
     else:

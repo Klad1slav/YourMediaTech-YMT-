@@ -18,6 +18,32 @@
     <form method="POST" class="register-container">
         <h2>Registration</h2>
     {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% if form.username.errors %}
+        <div class="text-danger">
+            {{ form.username.errors }}
+        </div>
+        {% endif %}
+
+    {% if form.email.errors %}
+        <div class="text-danger">
+            {{ form.email.errors }}
+        </div>
+        {% endif %}
+
+    {% if form.password1.errors %}
+        <div class="text-danger">
+            {{ form.password1.errors }}
+        </div>
+        {% endif %}
+
+    {% if form.password2.errors %}
+        <div class="text-danger">
+            {{ form.password2.errors }}
+        </div>
+        {% endif %}
+
     <div class="reg_field">
         <label for="id_username" class="form-label"></label>
         <div class="input-group">
