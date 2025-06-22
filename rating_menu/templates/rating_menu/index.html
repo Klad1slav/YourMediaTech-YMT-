@@ -4,25 +4,31 @@
 {%block css_files%}
 <link rel="stylesheet" href="{%static "rating_menu/styles/others.css"%}">
 <link rel="stylesheet" href="{%static "rating_menu/styles/buttons.css"%}">
+<script src="{% static 'rating_menu/scripts.js' %}"></script>
 {%endblock%}
 
 {%block content%}
-<div class="layout">
-    <nav class="sidebar">
-        <div class="dropdown show">
-        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Dropdown link
-        </a>
-
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
+        <div class="sidebar">
+            <!-- Dropdown menu at the top -->
+            <div class="sidebar-dropdown p-3">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="sidebarMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color:#434B51; color:#fff; border:none;">
+                        Menu
+                    </button>
+                    <ul class="dropdown-menu w-100" aria-labelledby="sidebarMenuDropdown" style="background-color:#222c36;">
+                        <li><a class="dropdown-item text-light" href="#">Action 1</a></li>
+                        <li><a class="dropdown-item text-light" href="#">Action 2</a></li>
+                        <li><a class="dropdown-item text-light" href="#">Action 3</a></li>
+                        <li><a class="dropdown-item text-light" href="#">Action 4</a></li>
+                        <li><a class="dropdown-item text-light" href="#">Action 5</a></li>
+                        <li><a class="dropdown-item text-light" href="#">Action 6</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Your sidebar buttons below -->
+            {% include "includes/header_buttons.html" %}
         </div>
-        </div>
-        {%include "includes/header_buttons.html"%} 
-    </nav>
-    <main class="main-content">
+        <main class="main-content">
         <div class="input-group mb-3" style="max-width: 500px;">
             <span class="input-group-text" id="search-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -46,9 +52,35 @@
         </div>
                 <div class="media-content">
         </div>
-        
-    </main>
+
+
+
+        </main>
+
+        <div id="modal-overlay" style="display:none;">
+    <div id="modal-form" class="card shadow">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Add New Item</h5>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-danger" onclick="hideForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
 {%endblock%}
 
 {%block footer%}

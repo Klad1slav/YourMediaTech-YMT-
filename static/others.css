@@ -13,15 +13,11 @@ body{
 
 header, footer{
     background-color: #36454F;
+    z-index: 2;
 }
 header{
     padding: 10px;
 }
 footer{
     width:100%;
-}
-.wrapper {
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
 }
