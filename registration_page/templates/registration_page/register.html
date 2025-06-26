@@ -21,25 +21,25 @@
     {{ form.non_field_errors }}
 
     {% if form.username.errors %}
-        <div class="text-danger">
+        <div class="text-errors">
             {{ form.username.errors }}
         </div>
         {% endif %}
 
     {% if form.email.errors %}
-        <div class="text-danger">
+        <div class="text-errors">
             {{ form.email.errors }}
         </div>
         {% endif %}
 
     {% if form.password1.errors %}
-        <div class="text-danger">
+        <div class="text-errors">
             {{ form.password1.errors }}
         </div>
         {% endif %}
 
     {% if form.password2.errors %}
-        <div class="text-danger">
+        <div class="text-errors">
             {{ form.password2.errors }}
         </div>
         {% endif %}
