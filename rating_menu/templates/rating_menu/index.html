@@ -58,29 +58,38 @@
         </main>
 
         <div id="modal-overlay" style="display:none;">
-    <div id="modal-form" class="card shadow">
-        <div class="card-body">
-            <h5 class="card-title mb-4">Add New Item</h5>
-            <form method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="mb-3">
-                        {{ field.label_tag }}
-                        {{ field }}
-                        {% if field.errors %}
-                            <div class="text-danger small">{{ field.errors|striptags }}</div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                <div class="d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-success">Save</button>
-                    <button type="button" class="btn btn-danger" onclick="hideForm()">Cancel</button>
-                </div>
-            </form>
+  <div id="modal-form" class="card shadow position-relative" style="min-width: 400px; max-width: 90vw;">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <!-- Search bar (top left) -->
+        <div style="width: 40%;">
+          <div class="input-group">
+            <span class="input-group-text" id="search-icon-modal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+              </svg>
+            </span>
+            {{ form.search_field.as_widget }}
+          </div>
         </div>
+        <!-- Image placeholder (center) -->
+        <div style="width: 160px; height: 220px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+          <span style="color: #aaa;">Image</span>
+        </div>
+        <!-- Stars (top right) -->
+        <div id="star-rating" class="ms-3" style="font-size: 2rem; cursor: pointer;">
+        </div>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button type="submit" class="btn btn-success">Save</button>
+          <button type="button" class="btn btn-danger" onclick="hideForm()">Cancel</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
-
 {%endblock%}
 
 {%block footer%}

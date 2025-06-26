@@ -11,6 +11,7 @@
     
 }
 .main-content {
+    margin-top: 50px;
     margin-left: 200px; /* Same as sidebar width */
     padding: 2rem;
     background: #1D1D1D;
@@ -39,6 +40,7 @@
     color: #DBDBDB;           /* Modal text color */
     border-radius: 12px;
     box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    width: 700px;
 }
 
 .sidebar-dropdown .dropdown-toggle {
@@ -63,4 +65,37 @@
 }
 #header_buttons{
     padding-top: 200px;
+}
+header {
+    position: fixed;
+    width: 100%;
+    z-index: 2; /* higher than sidebar */
+}
+#star-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+  user-select: none;
+}
+.star {
+  color: #ccc;
+  transition: color 0.2s;
+  cursor: pointer;
+  font-size: 2rem;
+  position: relative;
+  display: inline-block;
+}
+.star.full,
+.star.half {
+  color: #FFD700;
+}
+.star .half-star {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+  color: #FFD700;
+  pointer-events: none;
 }
