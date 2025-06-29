@@ -22,23 +22,50 @@
         
         <div class="container-fluid d-flex align-items-center justify-content-between">
             <h1 class="mb-0">Your MediaTheck</h1>
-            <div>
-                {% block header_block %}
-                <button type="button" class="btn btn-link p-0 border-0 text-white me-3" style="background: none;">
+            <div class="d-flex align-items-center gap-2">
+                {% block header_user_button %}
+               <!-- Wrap the button and menu in a Bootstrap dropdown -->
+        <div class="dropdown">
+            <!-- This is your existing icon button with minor tweaks -->
+            <button class="btn btn-link p-0 border-0 text-white me-3 " type="button"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: none;">
+                
+                <!-- User Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="currentColor"
+                    class="bi bi-person-circle" viewBox="0 0 16 16">
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                <path fill-rule="evenodd"
+                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 
+                        4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
+            </button>
 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-                    </svg>
-                </button>
+                 <!-- Bootstrap dropdown menu -->
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="/home">Home</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" href="/rating_menu">Library</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <li>
+                            <form action="{% url 'logout' %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item">Logout</button>
+                            </form>
+                        </li>
 
+                    </ul>
+            </div>
+
+                {% endblock %}
+
+                {% block header_color_button %}
                 <button type="button" class="btn btn-primary">
                     
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
                         <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
                     </svg>
                 </button>
-
                 {% endblock %}
             </div>
             

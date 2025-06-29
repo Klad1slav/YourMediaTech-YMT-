@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from .forms import RegisterForm
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import LoginForm 
@@ -31,6 +32,10 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, "registration_page/login.html", {"form": form})
+
+def logout_view(request):
+    logout(request)
+    return redirect("index") # Change "index" to your desired page 
 
 
 
