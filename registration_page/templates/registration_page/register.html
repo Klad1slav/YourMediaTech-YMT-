@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block header_user_button %}
+ {% comment %} to hide button in header {% endcomment %}
+{% endblock %}
+
 
 {%block content%}
 
@@ -18,6 +22,32 @@
     <form method="POST" class="register-container">
         <h2>Registration</h2>
     {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% if form.username.errors %}
+        <div class="text-errors">
+            {{ form.username.errors }}
+        </div>
+        {% endif %}
+
+    {% if form.email.errors %}
+        <div class="text-errors">
+            {{ form.email.errors }}
+        </div>
+        {% endif %}
+
+    {% if form.password1.errors %}
+        <div class="text-errors">
+            {{ form.password1.errors }}
+        </div>
+        {% endif %}
+
+    {% if form.password2.errors %}
+        <div class="text-errors">
+            {{ form.password2.errors }}
+        </div>
+        {% endif %}
+
     <div class="reg_field">
         <label for="id_username" class="form-label"></label>
         <div class="input-group">

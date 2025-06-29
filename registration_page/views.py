@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from .forms import RegisterForm
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import LoginForm 
@@ -11,7 +12,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)  # Optional: Log the user in after register
-            return redirect("welcome_page")  # Change "home" to your desired page
+            return redirect("home")  # Change "home" to your desired page
         else:
             print(form.errors) #Add this temporarily to see why it's failing
     else:
@@ -25,12 +26,16 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)  # Optional: Log the user in after log in
-            return redirect("welcome_page")  # Change "home" to your desired page
+            return redirect("home")  # Change "home" to your desired page
         else:
             print(form.errors) #Add this temporarily to see why it's failing
     else:
         form = LoginForm()
     return render(request, "registration_page/login.html", {"form": form})
+
+def logout_view(request):
+    logout(request)
+    return redirect("index") # Change "index" to your desired page 
 
 
 
