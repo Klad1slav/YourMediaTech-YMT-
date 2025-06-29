@@ -13,6 +13,7 @@ body{
 
 header, footer{
     background-color: #36454F;
+    z-index: 2;
 }
 header{
     padding: 10px;
