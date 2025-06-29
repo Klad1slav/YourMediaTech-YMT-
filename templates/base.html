@@ -72,13 +72,15 @@
         </div>
         
     </header>
-        {% block content %}
-        {% endblock %}
-    <footer>
-        <nav class="nav justify-content-center p-3">
-            {%block footer%}
-            {%endblock%}
-        </nav>
-    </footer>
+    <div class="wrapper">
+            {% block content %}
+            {% endblock %}
+    </div>
+        <footer>
+            <nav class="nav justify-content-center p-3">
+                {%block footer%}
+                {%endblock%}
+            </nav>
+        </footer>
 </body>
 </html>
