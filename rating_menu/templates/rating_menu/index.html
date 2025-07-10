@@ -39,23 +39,33 @@
       <button type="button" class="btn btn-success">Add new</button>
     </div>
 
-    <div class="media-content">
-    </div>
+        
+        {% for movie in movies %}
+        <div class="media-content d-flex mb-4" style="gap: 20px; align-items: flex-start;">
+          <div class="movie">
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_url }}" 
+                class="img-fluid" style="max-width: 200px;" alt="{{ movie.title }}">
+            </div>
+                <div class="movie-info">
+                <h2>{{ movie.title }}</h2>
+                <p>{{ movie.description }}</p>
+                <p><strong>Rating: </strong>{{ movie.rating }}</p>
+                <p><strong>Add at: </strong>{{ movie.created_at }}</p>
+            
+            </div>
+            <div id="star-rating" class="ms-3" style="font-size: 2rem; color: gold;">
+  {% for i in "12345"|slice:":10" %}
+    {% if forloop.counter <= movie.rating|floatformat:0 %}
+      ★
+    {% else %}
+      ☆
+    {% endif %}
+  {% endfor %}
+</div>
 
-    <div class="media-content">
-    </div>
+        </div>
+        {% endfor %}
 
-    <div class="media-content">
-    </div>
-
-    <div class="media-content">
-    </div>
-
-    <div class="media-content">
-    </div>
-
-    <div class="media-content">
-    </div>
 
   </main>
 
@@ -71,7 +81,12 @@
                   <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
                 </svg>
               </span>
-              {{ form.search_field.as_widget }}
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+             
+            {{ form.title }}
+            <span> {{ form.error }} </span>
             </div>
           </div>
           <!-- Image placeholder (center) -->
