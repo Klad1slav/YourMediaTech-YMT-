@@ -39,20 +39,32 @@
             <button type="button" class="btn btn-success">Add new</button>
         </div>
         
+        {% for movie in movies %}
+        <div class="media-content d-flex mb-4" style="gap: 20px; align-items: flex-start;">
+          <div class="movie">
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_url }}" 
+                class="img-fluid" style="max-width: 200px;" alt="{{ movie.title }}">
+            </div>
+                <div class="movie-info">
+                <h2>{{ movie.title }}</h2>
+                <p>{{ movie.description }}</p>
+                <p><strong>Rating: </strong>{{ movie.rating }}</p>
+                <p><strong>Add at: </strong>{{ movie.created_at }}</p>
+            
+            </div>
+            <div id="star-rating" class="ms-3" style="font-size: 2rem; color: gold;">
+  {% for i in "12345"|slice:":10" %}
+    {% if forloop.counter <= movie.rating|floatformat:0 %}
+      ★
+    {% else %}
+      ☆
+    {% endif %}
+  {% endfor %}
+</div>
 
-        <div class="media-content">
         </div>
+        {% endfor %}
 
-        <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
 
 
 
@@ -96,6 +108,7 @@
   </div>
 </form>
 </div>
+
 
 {%endblock%}
 
