@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
 {% block css_files %}
-<link rel="stylesheet" href="{% static "home/home.css" %}">
+    <link rel="stylesheet" href="{% static "home/home.css" %}">
 {% endblock %}
 {% block content %}
 {%include "includes/header_buttons.html"%}
-<h1 id="recommendations">Recommendations</h1>
-<p>{{ movie.overview|default:"No description available." }}</p>
-<p><strong>Release:</strong> {{ movie.release_date|default:"Unknown" }}</p>
-        {% for movie in movies %}
+    <h1 id="recommendations">Recommendations</h1>
+    <!--<p>{{ movie.overview|default:"No description available." }}</p>
+    <p><strong>Release:</strong> {{ movie.release_date|default:"Unknown" }}</p>-->
+    {% for movie in movies %}
         <div class="movie">
             <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
         <div class="movie-info">
@@ -17,5 +17,5 @@
             <p><strong>Release:</strong> {{ movie.release_date }}</p>
             </div>
         </div>
-        {% endfor %}
+    {% endfor %}
 {% endblock %}

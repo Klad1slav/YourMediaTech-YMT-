@@ -16,6 +16,7 @@ def home(request):
     else:
         movies = []
 
-    return render(request, "home/index.html", {'movies': movies
+    return render(request, "home/index.html", 
+                  {'movies': movies
     })
 
