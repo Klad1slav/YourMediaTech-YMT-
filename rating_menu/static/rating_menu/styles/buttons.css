@@ -5,15 +5,9 @@
     padding-left: 1rem;
 }
 #header_buttons button {
-    height: 8rem;
-    padding: 0.5rem;
+    height: 10rem;
+    padding: 1rem;
 }
-#header_buttons .btn-primary {
-    font-size: xx-large;
-}
-#header_buttons button:hover {
-    font-size: xxx-large;
-}
-#log_in{
-    height: 4rem;
+#sidebarMenuDropdown {
+    font-size: x-large;
 }

@@ -2,104 +2,105 @@
 {%load static%}
 
 {%block css_files%}
-<link rel="stylesheet" href="{%static "rating_menu/styles/others.css"%}">
-<link rel="stylesheet" href="{%static "rating_menu/styles/buttons.css"%}">
-<script src="{% static 'rating_menu/scripts.js' %}"></script>
+  <link rel="stylesheet" href="{%static "rating_menu/styles/others.css"%}">
+  <link rel="stylesheet" href="{%static "rating_menu/styles/buttons.css"%}">
+  <script src="{% static 'rating_menu/scripts.js' %}"></script>
 {%endblock%}
 
 {%block content%}
-        <div class="sidebar">
-            <!-- Dropdown menu at the top -->
-            <div class="sidebar-dropdown p-3">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="sidebarMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color:#434B51; color:#fff; border:none;">
-                        Menu
-                    </button>
-                    <ul class="dropdown-menu w-100" aria-labelledby="sidebarMenuDropdown" style="background-color:#222c36;">
-                        <li><a class="dropdown-item text-light" href="#">Action 1</a></li>
-                        <li><a class="dropdown-item text-light" href="#">Action 2</a></li>
-                        <li><a class="dropdown-item text-light" href="#">Action 3</a></li>
-                        <li><a class="dropdown-item text-light" href="#">Action 4</a></li>
-                        <li><a class="dropdown-item text-light" href="#">Action 5</a></li>
-                        <li><a class="dropdown-item text-light" href="#">Action 6</a></li>
-                    </ul>
-                </div>
-            </div>
-            <!-- Your sidebar buttons below -->
-            {% include "includes/header_buttons.html" %}
-        </div>
-        <main class="main-content">
-        <div class="input-group mb-3" style="max-width: 500px;">
-            <span class="input-group-text" id="search-icon">
+  <div class="sidebar">
+    <!-- Dropdown menu at the top -->
+    <div class="sidebar-dropdown p-3">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="sidebarMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color:#434B51; color:#fff; border:none;">
+          Menu
+        </button>
+        <ul class="dropdown-menu w-100" aria-labelledby="sidebarMenuDropdown" style="background-color:#222c36;">
+          <li><a class="dropdown-item text-light" href="#">Action 1</a></li>
+          <li><a class="dropdown-item text-light" href="#">Action 2</a></li>
+          <li><a class="dropdown-item text-light" href="#">Action 3</a></li>
+          <li><a class="dropdown-item text-light" href="#">Action 4</a></li>
+          <li><a class="dropdown-item text-light" href="#">Action 5</a></li>
+          <li><a class="dropdown-item text-light" href="#">Action 6</a></li>
+        </ul>
+      </div>
+    </div>
+    {% include "includes/header_buttons.html" %}
+  </div>
+
+  <main class="main-content">
+    <div class="input-group mb-3" style="max-width: 500px;">
+      <span class="input-group-text" id="search-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+        </svg>
+      </span>
+      <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="search-icon">
+      <button type="button" class="btn btn-success">Add new</button>
+    </div>
+
+    <div class="media-content">
+    </div>
+
+    <div class="media-content">
+    </div>
+
+    <div class="media-content">
+    </div>
+
+    <div class="media-content">
+    </div>
+
+    <div class="media-content">
+    </div>
+
+    <div class="media-content">
+    </div>
+
+  </main>
+
+  <div id="modal-overlay" style="display:none;">
+    <div id="modal-form" class="card shadow position-relative" style="min-width: 400px; max-width: 90vw;">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <!-- Search bar (top left) -->
+          <div style="width: 40%;">
+            <div class="input-group">
+              <span class="input-group-text" id="search-icon-modal">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
                 </svg>
-            </span>
-            <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="search-icon">
-            <button type="button" class="btn btn-success">Add new</button>
-        </div>
-
-        <div class="media-content">
-        </div>
-
-        <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
-                <div class="media-content">
-        </div>
-
-
-
-        </main>
-
-        <div id="modal-overlay" style="display:none;">
-  <div id="modal-form" class="card shadow position-relative" style="min-width: 400px; max-width: 90vw;">
-    <div class="card-body p-4">
-      <div class="d-flex justify-content-between align-items-start mb-3">
-        <!-- Search bar (top left) -->
-        <div style="width: 40%;">
-          <div class="input-group">
-            <span class="input-group-text" id="search-icon-modal">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
-              </svg>
-            </span>
-            {{ form.search_field.as_widget }}
+              </span>
+              {{ form.search_field.as_widget }}
+            </div>
+          </div>
+          <!-- Image placeholder (center) -->
+          <div style="width: 160px; height: 220px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <span style="color: #aaa;">Image</span>
+          </div>
+          <!-- Stars (top right) -->
+          <div id="star-rating" class="ms-3" style="font-size: 2rem; cursor: pointer;">
           </div>
         </div>
-        <!-- Image placeholder (center) -->
-        <div style="width: 160px; height: 220px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-          <span style="color: #aaa;">Image</span>
-        </div>
-        <!-- Stars (top right) -->
-        <div id="star-rating" class="ms-3" style="font-size: 2rem; cursor: pointer;">
-        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" class="btn btn-danger" onclick="hideForm()">Cancel</button>
+          </div>
+        </form>
       </div>
-      <form method="post">
-        {% csrf_token %}
-        <div class="d-flex justify-content-end gap-2 mt-4">
-          <button type="submit" class="btn btn-success">Save</button>
-          <button type="button" class="btn btn-danger" onclick="hideForm()">Cancel</button>
-        </div>
-      </form>
     </div>
   </div>
-</div>
+  <nav class="nav justify-content-center p-3">
+    <ul class="pagination">
+      <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+      <li class="page-item active"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+    </ul>
+  </nav>
 {%endblock%}
 
-{%block footer%}
-    <nav class="nav justify-content-center p-3">
-        <ul class="pagination">
-            <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-        </ul>
-    </nav>
-{%endblock%}
+{%block footer%}{%endblock%}

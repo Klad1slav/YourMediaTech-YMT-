@@ -1,10 +1,39 @@
+:root{
+    /*general*/
+    --bg1: #1D1D1D;
+    --bg2: #36454F;
+    /*buttons*/
+    --header-buttons-color: #434B51;
+    --header-buttons-hover-bg: #92AEC0;
+    --log-in-bg: #DBDBDB;
+    --log-in-color: #1D1D1D;
+
+    --text: #DBDBDB;
+}
+
+.light-mode {
+    --bg1: #DBDBDB;
+    --bg2: #92AEC0;
+
+    --header-buttons-color: #434B51;
+    --header-buttons-hover-bg: #36454F;
+    --log-in-bg: #1D1D1D;
+    --log-in-color: #DBDBDB;
+
+    --text: #1D1D1D;
+
+    --sidebar: #e5e5e5;
+    --input-bg: #fff;
+}
+
+
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
 }
 body{
-    background-color: #1D1D1D;
+    background-color: var(--bg1);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -12,8 +41,8 @@ body{
 }
 
 header, footer{
-    background-color: #36454F;
     z-index: 2;
+    background-color: var(--bg2);
 }
 header{
     padding: 10px;
