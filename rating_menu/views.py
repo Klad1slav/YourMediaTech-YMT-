@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.db import transaction
 from .forms import MediaItemForm 
 from .models import MediaItem
@@ -22,6 +22,17 @@ def index(request):
     form = MediaItemForm()
     error = None
 
+    # ✅ Handle deletion
+    if request.method == "POST" and "delete_movie_id" in request.POST:
+        media_id = request.POST.get("delete_movie_id")
+        try:
+            item = MediaItem.objects.get(id=media_id, user=user)
+            item.delete()
+        except MediaItem.DoesNotExist:
+            pass  # optionally show a message
+        return redirect('rating_menu')  # Refresh the page
+
+    # ✅ Handle form submission
     if request.method == "POST":
         form = MediaItemForm(request.POST)
         if form.is_valid():

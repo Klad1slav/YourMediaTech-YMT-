@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.star-display').forEach(function (container) {
-    const rating = parseFloat(container.dataset.rating); // e.g. 7.5
+    const rating = parseFloat(container.dataset.rating);
 
     for (let i = 1; i <= 5; i++) {
       const starValue = i * 2;
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const star = document.createElement('span');
       star.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg width="75" height="75" viewBox="0 0 50 50" fill="none" stroke="currentColor">
           <defs>
             <linearGradient id="half-static-${i}">
               <stop offset="50%" stop-color="#FFD700"/>

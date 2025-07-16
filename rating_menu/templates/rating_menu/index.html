@@ -45,14 +45,19 @@
         <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_url }}"
             class="img-fluid" style="max-width: 200px;" alt="{{ movie.title }}">
       </div>
-      <div class="movie-info">
+      <div class="movie-info flex-grow-1">
         <h2>{{ movie.title }}</h2>
         <p>{{ movie.description }}</p>
-          <!-- ⭐ Static star rating -->
-      <div class="star-display" data-rating="{{ movie.rating }}"></div>
+          <!-- Static star rating -->
         <p><strong>Add at: </strong>{{ movie.created_at }}</p>
       </div>
-      
+      <div class="star-display" data-rating="{{ movie.rating }}"></div>
+
+        <form method="POST" style="margin-top: 10px;">
+        {% csrf_token %}
+        <input type="hidden" name="delete_movie_id" value="{{ movie.id }}">
+        <button type="submit" id="delete_movie_item" class="btn btn-danger btn-sm">Delete</button>
+      </form>
     </div>
     {% endfor %}
   </main>
