@@ -26,6 +26,7 @@ def index(request):
         form = MediaItemForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
+            rating = form.cleaned_data['rating']
             try:
                 movie_data = search_movie_tmdb(title)
                 if movie_data:
@@ -35,7 +36,7 @@ def index(request):
                             title=movie_data['title'],
                             description=movie_data['overview'],
                             poster_url="https://image.tmdb.org/t/p/w500" + movie_data['poster_path'],
-                            rating=movie_data['vote_average'],
+                            rating=int(rating),
                             tmdb_id=movie_data['id']
                         )
                         form = MediaItemForm()  
