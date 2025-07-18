@@ -4,6 +4,7 @@ from .forms import MediaItemForm
 from .models import MediaItem
 from django.conf import settings
 import requests
+from django.core.paginator import Paginator
 
 def search_movie_tmdb(query):
     API_KEY = settings.TMDB_API_KEY
@@ -58,10 +59,19 @@ def index(request):
         else:
             error = "form error."
 
+    # Get all movies for this user
+    movie_list= MediaItem.objects.filter(user=user).order_by('-created_at')
+
+    # PAGINATOR: Show 10 movies per page
+    paginator = Paginator(movie_list, 10)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     
-    movies = MediaItem.objects.filter(user=user)
+   # movies = MediaItem.objects.filter(user=user)
     return render(request, "rating_menu/index.html", {
-        "movies": movies,
+      #  "movies": movies,
+        "page_obj": page_obj,
         "form": form,
         "error": error
     })
