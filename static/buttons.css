@@ -3,11 +3,11 @@
     border: none
 }
 
-.btn-primary:focus:active {
+#moon:focus:active {
     background-color: var(--log-in-bg) !important;
     color: var(--log-in-color) !important;
 }
-#header_buttons {
+#header_buttons form{
     display: flex;
     flex-direction: row;         
     width: 100%;
@@ -28,7 +28,7 @@
     font-size: xx-large;
 }
 
-.btn.active {
+#header_buttons button.active {
     background-color: var(--header-buttons-hover-bg) !important;
     color: #DBDBDB !important;
     font-size: xx-large !important;

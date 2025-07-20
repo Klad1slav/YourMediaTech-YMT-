@@ -92,3 +92,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     renderStars();
 });
+
+// Dropdown menu logic
+document.addEventListener('DOMContentLoaded', function() {
+    const mainMenu = document.getElementById('main-menu');
+    const submenuList = document.getElementById('submenu-list');
+    const dropdownMenu = mainMenu.parentElement;
+
+    // Example submenu data
+    const submenuOptions = {
+        genre: ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Thriller', 'Romance', 'Animation'],
+        year: ['2025', '2024', '2023', '2022', '2021', '2020'],
+        country: ['USA', 'UK', 'France', 'Germany', 'Japan', 'India'],
+        producer: ['Producer 1', 'Producer 2', 'Producer 3'],
+        director: ['Director 1', 'Director 2', 'Director 3'],
+        actor: ['Actor 1', 'Actor 2', 'Actor 3', 'Actor 4']
+    };
+
+    mainMenu.addEventListener('click', function(e) {
+        if (e.target.matches('[data-submenu]')) {
+            e.preventDefault();
+            const submenuKey = e.target.getAttribute('data-submenu');
+            const options = submenuOptions[submenuKey] || [];
+            submenuList.innerHTML = `
+                <li>
+                  <a href="#" class="dropdown-item text-light" id="back-to-main">&larr; Back</a>
+                </li>
+                ${options.map(opt => `<li><a class="dropdown-item text-light" href="#">${opt}</a></li>`).join('')}
+            `;
+            mainMenu.classList.add('d-none');
+            submenuList.classList.remove('d-none');
+            // Make submenu scrollable if too long
+            submenuList.style.maxHeight = '200px';
+            submenuList.style.overflowY = 'auto';
+        }
+    });
+
+    submenuList.addEventListener('click', function(e) {
+        if (e.target.id === 'back-to-main') {
+            e.preventDefault();
+            submenuList.classList.add('d-none');
+            mainMenu.classList.remove('d-none');
+        }
+        // You can handle submenu option clicks here if needed
+    });
+});

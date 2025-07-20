@@ -1,8 +1,20 @@
-<section id="header_buttons">
-    <button type="button" class="btn btn-primary">Films</button>
+{% comment %} <section id="header_buttons">
+    <button type="button" class="btn btn-primary active">Films</button>
     <button type="button" class="btn btn-primary">Series</button>
     <button type="button" class="btn btn-primary">Toons</button>
     <button type="button" class="btn btn-primary">Books</button>
     <button type="button" class="btn btn-primary">Games</button>
     <button type="button" class="btn btn-primary">Anime</button>
+</section>  {% endcomment %}
+
+ <section id="header_buttons">
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="media_type" value="films" class="btn btn-primary ">Films</button>
+        <button type="submit" name="media_type" value="series" class="btn btn-primary">Series</button>
+        <button type="submit" name="media_type" value="toons" class="btn btn-primary">Toons</button>
+        <button type="submit" name="media_type" value="books" class="btn btn-primary">Books</button>
+        <button type="submit" name="media_type" value="games" class="btn btn-primary">Games</button>
+        <button type="submit" name="media_type" value="anime" class="btn btn-primary">Anime</button>
+    </form>
 </section> 

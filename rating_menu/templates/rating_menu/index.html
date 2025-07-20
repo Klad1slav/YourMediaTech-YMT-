@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {%load static%}
 
+{%block title%}
+{{slug}}
+{%endblock%}
 {%block css_files%}
   <link rel="stylesheet" href="{%static "rating_menu/styles/others.css"%}">
   <link rel="stylesheet" href="{%static "rating_menu/styles/buttons.css"%}">
@@ -8,28 +11,36 @@
 {%endblock%}
 
 {%block content%}
+
   <div class="sidebar">
     <!-- Dropdown menu at the top -->
     <div class="sidebar-dropdown p-3">
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="sidebarMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color:#434B51; color:#fff; border:none;">
+      <div class="dropdown" id="sidebarDropdown">
+        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="sidebarMenuDropdown"
+          data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="false"
+          style="background-color:#434B51; color:#fff; border:none;">
           Menu
         </button>
-        <ul class="dropdown-menu w-100" aria-labelledby="sidebarMenuDropdown" style="background-color:#222c36;">
-          <li><a class="dropdown-item text-light" href="#">Action 1</a></li>
-          <li><a class="dropdown-item text-light" href="#">Action 2</a></li>
-          <li><a class="dropdown-item text-light" href="#">Action 3</a></li>
-          <li><a class="dropdown-item text-light" href="#">Action 4</a></li>
-          <li><a class="dropdown-item text-light" href="#">Action 5</a></li>
-          <li><a class="dropdown-item text-light" href="#">Action 6</a></li>
-        </ul>
+        <div class="dropdown-menu w-100 p-0" aria-labelledby="sidebarMenuDropdown" style="background-color:#222c36; max-height: 250px; overflow-y: auto;">
+          <ul class="list-unstyled mb-0" id="main-menu">
+            <li><a class="dropdown-item text-light" href="#" data-submenu="genre">Genre</a></li>
+            <li><a class="dropdown-item text-light" href="#" data-submenu="year">Year</a></li>
+            <li><a class="dropdown-item text-light" href="#" data-submenu="country">Country</a></li>
+            <li><a class="dropdown-item text-light" href="#" data-submenu="producer">Producer</a></li>
+            <li><a class="dropdown-item text-light" href="#" data-submenu="director">Director</a></li>
+            <li><a class="dropdown-item text-light" href="#" data-submenu="actor">Actor</a></li>
+          </ul>
+          <ul class="list-unstyled mb-0 d-none" id="submenu-list">
+            <!-- Submenu options will be injected here -->
+          </ul>
+        </div>
       </div>
     </div>
     {% include "includes/header_buttons.html" %}
   </div>
 
   <main class="main-content">
-    <div class="input-group mb-3" style="max-width: 500px;">
+    <div class="input-group mb-3 position-relative" style="max-width: 500px;">
       <span class="input-group-text" id="search-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
           <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
@@ -37,6 +48,15 @@
       </span>
       <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="search-icon">
       <button type="button" class="btn btn-success">Add new</button>
+      <form method="post" id="suggestion-form" autocomplete="off">
+        {% csrf_token %}
+        <input type="hidden" name="suggestion" id="suggestion-input">
+        <ul id="suggestions" class="list-group mt-2" style="display:none;">
+            {% for movie in movies|slice:":6" %}
+                <li class="list-group-item" data-title="{{ movie.title }}">{{ movie.title }}</li>
+            {% endfor %}
+        </ul>
+    </form>
     </div>
         
     {% for movie in movies %}
@@ -50,6 +70,8 @@
         <p>{{ movie.description }}</p>
         <p><strong>Rating: </strong>{{ movie.rating }}</p>
         <p><strong>Add at: </strong>{{ movie.created_at }}</p>
+        <p><strong>Release date: </strong>{{ movie.year }}</p>
+        <p><strong>Genres: </strong>{{ movie.genre }}</p>
       </div>
       <div id="star-rating" class="ms-3" style="font-size: 2rem; color: gold;">
         {% for i in "12345"|slice:":10" %}
@@ -83,6 +105,7 @@
                 {% endif %}
                 {{ form.title }}
                 <span> {{ form.error }} </span>
+                <ul id="suggestions_modal" class="list-group mt-2"></ul>
               </div>
             </div>
             <!-- Image placeholder (center) -->
@@ -101,15 +124,10 @@
       </div>
     </form>
   </div>
-  <nav class="nav justify-content-center p-3">
-    <ul class="pagination">
-        <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-    </ul>
-</nav>
+  <h1 color="white">{{movies|length}}</h1>
+  <script>
+  const movieTitles = {{ movie_titles|safe }};
+  </script>
 {%endblock%}
 
 
