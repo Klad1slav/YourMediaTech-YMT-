@@ -82,10 +82,10 @@ def index(request, slug="films"):
                                 description=movie_data['overview'],
                                 poster_url="https://image.tmdb.org/t/p/w500" + movie_data['poster_path'],
                                 rating=int(rating),
-                                tmdb_id=movie_data['id']
+                                tmdb_id=movie_data['id'],
                                 genre = movie_data['genre_ids'],
                                 year = datetime.datetime.strptime(movie_data['release_date'], "%Y-%m-%d"),
-                                type = slug  
+                                type = slug,
                             )
                             form = MediaItemForm()  
                     else:
