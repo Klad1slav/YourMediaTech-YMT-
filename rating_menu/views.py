@@ -5,17 +5,16 @@ from .models import MediaItem
 from django.conf import settings
 import requests
 import datetime
-import json
 
 def search_media_tmdb(query, media_type):
     API_KEY = settings.TMDB_API_KEY
     urls = {
         "films": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
-        "series": f"https://api.themoviedb.org/3/search/multi?api_key={API_KEY}&query={query}",
-        "toons": "",
+        "series": f"https://api.themoviedb.org/3/search/tv?api_key={API_KEY}&query={query}",
+        "toons": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
         "books": "",
         "games": "",
-        "anime": "",
+        "anime": f"https://api.themoviedb.org/3/search/multi?api_key={API_KEY}&query={query}",
     }
     
     url = urls[media_type]
@@ -23,22 +22,21 @@ def search_media_tmdb(query, media_type):
     data = response.json()
     if data['results']:
         match media_type:
-            # case "films":
-            #     pass
             case "series":
-                output_list = [serie for serie in data['results'] if serie["media_type"]=="tv"]
-                data['results'] = output_list
                 for item in data['results']:
                     item['title'] = item.pop('name')
                     item['release_date'] = item.pop('first_air_date')
-            case "toons":
-                pass
             case "books":
                 pass
             case "games":
                 pass
             case "anime":
-                pass
+                # output_list = [serie for serie in data['results'] if serie["media_type"]=="tv"]
+                # data['results'] = output_list
+                for item in data['results']:
+                    if item["media_type"]=="tv":
+                        item['title'] = item.pop('name')
+                        item['release_date'] = item.pop('first_air_date')
         print(data['results'][0])
         
         return data['results'][0]  # change to make possible for seeing all possible results
