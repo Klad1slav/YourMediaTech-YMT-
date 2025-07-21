@@ -8,6 +8,8 @@
     --log-in-bg: #DBDBDB;
     --log-in-color: #1D1D1D;
 
+    --media-item-card-bg: #434B51;
+
     --text: #DBDBDB;
 }
 
@@ -19,6 +21,8 @@
     --header-buttons-hover-bg: #36454F;
     --log-in-bg: #1D1D1D;
     --log-in-color: #DBDBDB;
+
+    --media-item-card-bg: #92AEC0;
 
     --text: #1D1D1D;
 
@@ -55,4 +59,5 @@ footer{
     display: flex;
     flex-direction: column;
 }
+
 

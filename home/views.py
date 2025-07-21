@@ -1,6 +1,7 @@
 import requests
 from django.shortcuts import render
 from django.conf import settings
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -12,11 +13,17 @@ def home(request):
 
     if response.status_code == 200:
         data = response.json()
-        movies = data.get('results', []) [:30]
+        movie_list = data.get('results', []) [:30]
     else:
-        movies = []
+        movie_list = []
+
+    # PAGINATOR: Show 10 movies per page
+    paginator = Paginator(movie_list, 10)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
 
     return render(request, "home/index.html", 
-                  {'movies': movies
+                  {'page_obj': page_obj
     })
 

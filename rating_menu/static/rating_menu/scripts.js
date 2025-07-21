@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Star rating logic for 0.5 increments, 1-10 scale
 document.addEventListener('DOMContentLoaded', function() {
+    
     const starContainer = document.getElementById('star-rating');
     if (!starContainer) return;
 
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   />
                 </svg>
             `;
+            
 
             // Mouse events for half-star detection
             star.addEventListener('mousemove', function(e) {
@@ -92,6 +94,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     renderStars();
 });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.star-display').forEach(function (container) {
+    const rating = parseFloat(container.dataset.rating);
+
+    for (let i = 1; i <= 5; i++) {
+      const starValue = i * 2;
+      let starClass = '';
+      if (rating >= starValue) {
+        starClass = 'full';
+      } else if (rating >= starValue - 1) {
+        starClass = 'half';
+      }
+
+      const star = document.createElement('span');
+      star.innerHTML = `
+        <svg width="75" height="75" viewBox="0 0 50 50" fill="none" stroke="currentColor">
+          <defs>
+            <linearGradient id="half-static-${i}">
+              <stop offset="50%" stop-color="#FFD700"/>
+              <stop offset="50%" stop-color="#ccc"/>
+            </linearGradient>
+          </defs>
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02
+                    12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+            fill="${starClass === 'full' ? '#FFD700' : starClass === 'half' ? 'url(#half-static-'+i+')' : '#ccc'}"
+          />
+        </svg>
+      `;
+      container.appendChild(star);
+    }
+  });
+});
+
 
 // Dropdown menu logic
 document.addEventListener('DOMContentLoaded', function() {

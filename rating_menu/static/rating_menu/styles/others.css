@@ -17,7 +17,7 @@
     width: calc(100% - 200px);
 }
 .media-content{
-    background-color: #434B51;
+    background-color: var(--media-item-card-bg);
     min-height: 10rem;
     margin: 0;
     margin-top: 1rem;

@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.db import transaction
 from .forms import MediaItemForm 
 from .models import MediaItem
 from django.conf import settings
 import requests
 import datetime
+from django.core.paginator import Paginator
 
 def search_media_tmdb(query, media_type):
     API_KEY = settings.TMDB_API_KEY
@@ -49,19 +50,18 @@ def index(request, slug="films"):
     user = request.user
     form = MediaItemForm()
     error = None
-    
-    # if request.method == "GET":
-    #     if "suggestion" in request.GET:
-    #         title  = request.GET.get("suggestion")
-    #         movies = MediaItem.objects.filter(user=user, type = slug, title=title)
-    #         print(request.GET)
-    #         return render(request, "rating_menu/index.html", {
-    #             "movies": movies,
-    #             "movie_titles": [movie.title for movie in movies],
-    #             "form": form,
-    #             "error": error,
-    #             "slug": slug
-    #         })
+
+    # ✅ Handle deletion
+    if request.method == "POST" and "delete_movie_id" in request.POST:
+        media_id = request.POST.get("delete_movie_id")
+        try:
+            item = MediaItem.objects.get(id=media_id, user=user)
+            item.delete()
+        except MediaItem.DoesNotExist:
+            pass  # optionally show a message
+        return redirect('rating_menu')  # Refresh the page
+
+    # ✅ Handle form submission
     if request.method == "POST":
         if "media_type" in request.POST:
             slug = request.POST.get("media_type")
@@ -71,6 +71,7 @@ def index(request, slug="films"):
             form = MediaItemForm(request.POST)
             if form.is_valid():
                 title = form.cleaned_data['title']
+                rating = form.cleaned_data['rating']
                 try:
                     movie_data = search_media_tmdb(title, slug)
                     if movie_data:
@@ -80,30 +81,35 @@ def index(request, slug="films"):
                                 title=movie_data['title'],
                                 description=movie_data['overview'],
                                 poster_url="https://image.tmdb.org/t/p/w500" + movie_data['poster_path'],
-                                rating=movie_data['vote_average'],
-                                tmdb_id=movie_data['id'],
+                                rating=int(rating),
+                                tmdb_id=movie_data['id']
                                 genre = movie_data['genre_ids'],
                                 year = datetime.datetime.strptime(movie_data['release_date'], "%Y-%m-%d"),
-                                type = slug                      
+                                type = slug  
                             )
                             form = MediaItemForm()  
                     else:
-                        error = "Film doesn't exist in TMDB database."
+                        error = "Film doest exist in TMDB database."
                 except Exception as e:
                     error = f"Save error: {str(e)}"
             else:
                 error = "form error."
         suggestion = request.POST.get("suggestion")
         if suggestion:
-            movies = MediaItem.objects.filter(user=request.user, type=slug, title=suggestion)
+            movie_list = MediaItem.objects.filter(user=request.user, type=slug, title=suggestion)
         else:
-            movies = MediaItem.objects.filter(user=request.user, type=slug)
+                movie_list= MediaItem.objects.filter(user=user, type=slug).order_by('-created_at')
     else:
-        movies = MediaItem.objects.filter(user=request.user, type=slug)
-    print(request.POST)
+        movie_list= MediaItem.objects.filter(user=user, type=slug).order_by('-created_at')
+    
+    
+    # PAGINATOR: Show 10 movies per page
+    paginator = Paginator(movie_list, 10)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     return render(request, "rating_menu/index.html", {
-        "movies": movies,
-        "movie_titles": [movie.title for movie in movies],
+        "page_obj": page_obj,
+        "movie_titles": [movie.title for movie in movie_list],
         "form": form,
         "error": error,
         "slug": slug
