@@ -13,12 +13,12 @@ def home(request):
 
     if response.status_code == 200:
         data = response.json()
-        movie_list = data.get('results', []) [:30]
+        movie_list = data.get('results', []) [:20] # Get 20 movies(max)
     else:
         movie_list = []
 
-    # PAGINATOR: Show 10 movies per page
-    paginator = Paginator(movie_list, 10)  
+    # PAGINATOR: Show 20 movies per page
+    paginator = Paginator(movie_list, 12)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

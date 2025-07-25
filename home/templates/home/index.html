@@ -8,16 +8,40 @@
     <h1 id="recommendations">Recommendations</h1>
 
     
+      {% comment %} {% for movie in page_obj %}
+          <div class="movie">
+              <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
+          <div class="movie-info">
+              <h2>{{ movie.title }}</h2>
+              <p>{{ movie.overview }}</p>
+              <p><strong>Release:</strong> {{ movie.release_date }}</p>
+              </div>
+          </div>
+      {% endfor %} {% endcomment %}
+
+
+<div class="home_media_items">
+  <div class="row">
     {% for movie in page_obj %}
-        <div class="movie">
-            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
-        <div class="movie-info">
-            <h2>{{ movie.title }}</h2>
-            <p>{{ movie.overview }}</p>
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+        <div class="card h-100 media-card">
+          {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+               class="card-img-top media-poster" alt="{{ movie.title }}">
+          {% else %}
+            <img src="{% static 'home/images/no_image.png' %}" class="card-img-top media-poster" alt="No image available">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ movie.title }}</h5>
+            <p class="card-text">{{ movie.overview|truncatechars:500 }}</p>
             <p><strong>Release:</strong> {{ movie.release_date }}</p>
-            </div>
+          </div>
         </div>
+      </div>
     {% endfor %}
+  </div>
+</div>
+
 
     <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center mt-4">
