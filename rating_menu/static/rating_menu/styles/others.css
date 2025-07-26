@@ -143,3 +143,8 @@ header {
     background: #92AEC0;
     color: #fff;
 }
+
+.star-display {
+    width: fit-content;
+    margin-left: 100px;
+}

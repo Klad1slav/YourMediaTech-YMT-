@@ -19,7 +19,13 @@ def search_media_tmdb(query, media_type):
     }
     
     url = urls[media_type]
+    if not url:
+        return []
+    
     response = requests.get(url)
+    if response.status_code != 200:
+        return []
+
     data = response.json()
     if data['results']:
         match media_type:

@@ -60,7 +60,7 @@
     </div>
         
     {% for movie in page_obj %}
-    <div class="media-content d-flex mb-4" style="gap: 20px; align-items: flex-start;">
+    <div class="media-content d-flex mb-4" style="gap: 10px; align-items: flex-start;">
       <div class="movie">
         <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_url }}"
             class="img-fluid" style="max-width: 200px;" alt="{{ movie.title }}">
@@ -72,8 +72,9 @@
         <p><strong>Add at: </strong>{{ movie.created_at }}</p>
         <p><strong>Release date: </strong>{{ movie.year }}</p>
         <p><strong>Genres: </strong>{{ movie.genre }}</p>
+        <div class="star-display ms-auto" data-rating="{{ movie.rating }}"></div>
+        
       </div>
-      <div class="star-display" data-rating="{{ movie.rating }}"></div>
 
         <form method="POST" style="margin-top: 10px;">
         {% csrf_token %}
