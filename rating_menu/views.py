@@ -6,8 +6,9 @@ from django.conf import settings
 import requests
 import datetime
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
-def search_media_tmdb(query, media_type):
+def search_media_tmdb(query, media_type)->list:
     API_KEY = settings.TMDB_API_KEY
     urls = {
         "films": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
@@ -38,10 +39,10 @@ def search_media_tmdb(query, media_type):
                     if item["media_type"]=="tv":
                         item['title'] = item.pop('name')
                         item['release_date'] = item.pop('first_air_date')
-        print(data['results'][0])
+        # print(data['results'][0])
         
-        return data['results'][0]  # change to make possible for seeing all possible results
-    return None
+        return data['results']#[0]  # change to make possible for seeing all possible results
+    return []
 
 def index(request, slug="films"):
     if not request.user.is_authenticated:
@@ -53,6 +54,7 @@ def index(request, slug="films"):
 
     # ✅ Handle deletion
     if request.method == "POST" and "delete_movie_id" in request.POST:
+        # print(request.POST)
         media_id = request.POST.get("delete_movie_id")
         try:
             item = MediaItem.objects.get(id=media_id, user=user)
@@ -73,7 +75,7 @@ def index(request, slug="films"):
                 title = form.cleaned_data['title']
                 rating = form.cleaned_data['rating']
                 try:
-                    movie_data = search_media_tmdb(title, slug)
+                    movie_data = search_media_tmdb(title, slug)[0]#A problem if the result is None
                     if movie_data:
                         with transaction.atomic():
                             MediaItem.objects.create(
@@ -95,12 +97,33 @@ def index(request, slug="films"):
             else:
                 error = "form error."
         suggestion = request.POST.get("suggestion")
+        print(suggestion)
         if suggestion:
             movie_list = MediaItem.objects.filter(user=request.user, type=slug, title=suggestion)
         else:
                 movie_list= MediaItem.objects.filter(user=user, type=slug).order_by('-created_at')
     else:
         movie_list= MediaItem.objects.filter(user=user, type=slug).order_by('-created_at')
+        
+    if request.method == "GET" and "q" in request.GET:
+        query = request.GET.get("q")
+        suggestions = search_media_tmdb(query, slug)
+            
+        if suggestions:
+            # print(suggestions[:6])
+            return render(request, "rating_menu/index.html", {
+            "suggestions": suggestions
+    })
+    if request.method == "GET" and "title" in request.GET:
+        
+        query = request.GET.get("title")
+        suggestions = search_media_tmdb(query, slug)
+        if "title" in request.GET:
+            return JsonResponse({
+            "suggestions": suggestions,
+            "first_title": suggestions[0]["title"],
+            "image": suggestions[0]["poster_path"]
+            })
     
     
     # PAGINATOR: Show 10 movies per page
@@ -114,3 +137,5 @@ def index(request, slug="films"):
         "error": error,
         "slug": slug
     })
+    
+

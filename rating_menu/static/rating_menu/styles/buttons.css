@@ -30,3 +30,6 @@
     margin-top: 20px;
     padding: 5rem;
 }
+#add_new{
+    z-index: 0;
+}

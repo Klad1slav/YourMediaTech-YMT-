@@ -49,3 +49,4 @@ suggestionsList.addEventListener('click', function(e) {
         suggestionForm.submit();
     }
 });
+

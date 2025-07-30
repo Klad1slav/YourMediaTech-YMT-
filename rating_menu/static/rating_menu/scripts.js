@@ -175,3 +175,75 @@ document.addEventListener('DOMContentLoaded', function() {
         // You can handle submenu option clicks here if needed
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modalInput = document.querySelector('#modal-form input[name="title"]');
+    const suggestionsModal = document.getElementById('suggestions_modal');
+    if (!modalInput || !suggestionsModal) return;
+
+    modalInput.addEventListener('input', function() {
+        const query = modalInput.value.trim();
+        suggestionsModal.innerHTML = '';
+        if (query.length === 0) {
+            suggestionsModal.style.display = 'none';
+            return;
+        }
+        fetch(`${window.location.pathname}?q=${encodeURIComponent(query)}`)
+            .then(response => response.text())
+            .then(html => {
+                // Create a temporary DOM to extract suggestions from the returned HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const newSuggestions = tempDiv.querySelectorAll('#suggestions_modal li.list-group-item');
+                if (newSuggestions.length > 0) {
+                    newSuggestions.forEach(li => {
+                        const newLi = document.createElement('li');
+                        newLi.className = 'list-group-item';
+                        newLi.textContent = li.textContent;
+                        newLi.setAttribute('data-title', li.getAttribute('data-title'));
+                        newLi.onclick = function() {
+                            modalInput.value = newLi.textContent;
+                            suggestionsModal.innerHTML = '';
+                            suggestionsModal.style.display = 'none';
+                        };
+                        suggestionsModal.appendChild(newLi);
+                    });
+                    suggestionsModal.style.display = 'block';
+                } else {
+                    suggestionsModal.style.display = 'none';
+                }
+            })
+            .catch(() => {
+                suggestionsModal.style.display = 'none';
+            });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const suggestionsModal = document.getElementById('suggestions_modal');
+  if (suggestionsModal) {
+    suggestionsModal.addEventListener('click', function(e) {
+      if (e.target && e.target.matches('li.list-group-item')) {
+        const title = e.target.getAttribute('data-title');
+        fetch(`${window.location.pathname}?title=${encodeURIComponent(title)}&ajax=1`)
+          .then(response => response.json())
+          .then(data => {
+            // Update modal title
+            const modalTitle = document.querySelector('#modal-form h2');
+            if (modalTitle) modalTitle.textContent = data.first_title;
+
+            // Update modal image
+            const modalImg = document.querySelector('#modal-form img');
+            if (modalImg) {
+              modalImg.src = `https://image.tmdb.org/t/p/w300${data.image}`;
+              modalImg.alt = data.first_title;
+            }
+
+            // Optionally hide suggestions
+            suggestionsModal.style.display = 'none';
+          });
+      }
+    });
+  }
+});
+
