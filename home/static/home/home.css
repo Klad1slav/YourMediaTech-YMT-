@@ -35,3 +35,16 @@
   max-width: 300px;
   border-radius: 10px;
 }
+
+.media-card {
+  border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+  max-width: 100%;
+  height: auto;
+  width: 450px;            
+  background-color: var(--media-item-card-bg);
+  color: var(--text);
+}
+
+
