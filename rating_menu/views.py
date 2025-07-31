@@ -143,5 +143,3 @@ def index(request, slug="films"):
         "error": error,
         "slug": slug
     })
-    
-
