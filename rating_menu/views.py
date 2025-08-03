@@ -8,13 +8,37 @@ import datetime
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
+def search_game_rawg(query):
+    RAWG_API_KEY = settings.RAWG_API_KEY
+    url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={query}"
+    
+    response = requests.get(url)
+    data = response.json()
+
+    
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+    if data['results']:
+        game = data['results'][0]  # First matching game
+        return {
+            'title': game['name'],
+            'description': game.get('description_raw', 'No description'),
+            'poster_url': game['background_image'],
+            'release_date': game['released'],
+            'id': game['id'],
+            'genre': [g['name'] for g in game.get('genres', [])]
+            }
+    return []
+
 def search_media_tmdb(query, media_type)->list:
-    API_KEY = settings.TMDB_API_KEY
+    MOVIE_API_KEY = settings.TMDB_API_KEY
     urls = {
         "films": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
         "series": f"https://api.themoviedb.org/3/search/tv?api_key={API_KEY}&query={query}",
         "toons": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
-        "books": f"https://openlibrary.org/search.json?q={query}",
+        "books": "",
         "games": "",
         "anime": f"https://api.themoviedb.org/3/search/multi?api_key={API_KEY}&query={query}",
     }
@@ -35,8 +59,6 @@ def search_media_tmdb(query, media_type)->list:
                     item['title'] = item.pop('name')
                     item['release_date'] = item.pop('first_air_date')
             case "books":
-                pass
-            case "games":
                 pass
             case "anime":
                 # output_list = [serie for serie in data['results'] if serie["media_type"]=="tv"]
@@ -78,6 +100,7 @@ def index(request, slug="films"):
         else:
             form = MediaItemForm(request.POST)
             if form.is_valid():
+                
                 title = form.cleaned_data['title']
                 rating = form.cleaned_data['rating']
                 try:

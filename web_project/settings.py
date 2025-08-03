@@ -16,6 +16,7 @@ import os
 
 load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+RAWG_API_KEY = os.getenv("RAWG_API_KEY")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
