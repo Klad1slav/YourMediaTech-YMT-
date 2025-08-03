@@ -67,7 +67,7 @@
       </div>
       <div class="movie-info">
         <h2>{{ movie.title }}</h2>
-        <p>{{ movie.description }}</p>
+        <p>{{ movie.description |truncatechars:400}}</p>
         <p><strong>Add at: </strong>{{ movie.created_at }}</p>
         <p><strong>Release date: </strong>{{ movie.year }}</p>
         <div class="last_row">

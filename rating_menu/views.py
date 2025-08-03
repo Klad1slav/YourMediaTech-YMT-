@@ -14,7 +14,7 @@ def search_media_tmdb(query, media_type)->list:
         "films": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
         "series": f"https://api.themoviedb.org/3/search/tv?api_key={API_KEY}&query={query}",
         "toons": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
-        "books": "",
+        "books": f"https://openlibrary.org/search.json?q={query}",
         "games": "",
         "anime": f"https://api.themoviedb.org/3/search/multi?api_key={API_KEY}&query={query}",
     }
