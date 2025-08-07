@@ -13,34 +13,42 @@ def search_game_rawg(query):
     url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={query}"
     
     response = requests.get(url)
-    data = response.json()
-
-    
     if response.status_code != 200:
         return []
 
     data = response.json()
-    if data['results']:
-        game = data['results'][0]  # First matching game
-        return {
-            'title': game['name'],
-            'description': game.get('description_raw', 'No description'),
-            'poster_url': game['background_image'],
-            'release_date': game['released'],
-            'id': game['id'],
-            'genre': [g['name'] for g in game.get('genres', [])]
-            }
-    return []
+    results = data.get('results', [])
+    if not results:
+        return []
+
+    game = results[0] # Take the first result
+    slug = game['slug']
+
+    details_url = f"https://api.rawg.io/api/games/{slug}?key={RAWG_API_KEY}"
+    details_response = requests.get(details_url)
+    if details_response.status_code != 200:
+        return []
+
+    game_details = details_response.json()
+
+    return {
+        'title': game_details.get('name'),
+        'description': game_details.get('description_raw'),
+        'poster_url': game_details.get('background_image'),
+        'release_date': game_details.get('released'),
+        'id': game_details.get('id'),
+        'genre': [g['name'] for g in game_details.get('genres', [])]
+    }
 
 def search_media_tmdb(query, media_type)->list:
     MOVIE_API_KEY = settings.TMDB_API_KEY
     urls = {
-        "films": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
-        "series": f"https://api.themoviedb.org/3/search/tv?api_key={API_KEY}&query={query}",
-        "toons": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
-        "books": "",
+        "films": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
+        "series": f"https://api.themoviedb.org/3/search/tv?api_key={MOVIE_API_KEY}&query={query}",
+        "toons": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
+        "books": f"https://openlibrary.org/search.json?q={query}",
         "games": "",
-        "anime": f"https://api.themoviedb.org/3/search/multi?api_key={API_KEY}&query={query}",
+        "anime": f"https://api.themoviedb.org/3/search/multi?api_key={MOVIE_API_KEY}&query={query}",
     }
     
     url = urls[media_type]
@@ -103,6 +111,27 @@ def index(request, slug="films"):
                 
                 title = form.cleaned_data['title']
                 rating = form.cleaned_data['rating']
+                try:
+                    if slug == "games":
+                        game_data = search_game_rawg(title)
+                        if game_data:
+                            MediaItem.objects.create(
+                                user=user,
+                                title=game_data['title'],
+                                description=game_data['description'],
+                                poster_url=game_data['poster_url'],
+                                rating=int(rating),
+                                tmdb_id=game_data['id'],  # use as unique ID
+                                genre=game_data['genre'],
+                                year=datetime.datetime.strptime(game_data['release_date'], "%Y-%m-%d") if game_data['release_date'] else None,
+                                type=slug,
+                        )
+                            #form = MediaItemForm()
+                    else:
+                        error = "Game doest exist in database."
+                except Exception as e:
+                    error = f"Save error: {str(e)}"
+
                 try:
                     movie_data = search_media_tmdb(title, slug)[0]#A problem if the result is None
                     if movie_data:
