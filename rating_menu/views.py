@@ -188,6 +188,7 @@ def index(request, slug="films"):
     paginator = Paginator(movie_list, 10)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     return render(request, "rating_menu/index.html", {
         "page_obj": page_obj,
         "movie_titles": [movie.title for movie in movie_list],
