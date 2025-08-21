@@ -32,15 +32,40 @@ def search_game_rawg(query):
             }
     return []
 
+def search_book_open_library(query):
+    url = f"https://openlibrary.org/search.json?q={query}"
+    
+    response = requests.get(url)
+    data = response.json()
+
+    
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+    if data['docs']:
+        book = data['docs'][0]  # First matching game
+        key = f"https://openlibrary.org/{book['key']}.json"
+        response = requests.get(key)
+        work = response.json()
+        
+        return {
+            'title': book['title'],
+            'description': work['description']['value'],
+            'poster_url': f'https://covers.openlibrary.org/b/id/{book['cover_edition_key']}.jpg',
+            'release_date': book['first_publish_year'],
+            'id': book['isbn'[0]],
+            'genre': [g for g in work.get('subjects', [])[:5]]
+            }
+    return []
+
 def search_media_tmdb(query, media_type)->list:
     MOVIE_API_KEY = settings.TMDB_API_KEY
     urls = {
-        "films": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
-        "series": f"https://api.themoviedb.org/3/search/tv?api_key={API_KEY}&query={query}",
-        "toons": f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}",
-        "books": "",
-        "games": "",
-        "anime": f"https://api.themoviedb.org/3/search/multi?api_key={API_KEY}&query={query}",
+        "films": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
+        "series": f"https://api.themoviedb.org/3/search/tv?api_key={MOVIE_API_KEY}&query={query}",
+        "toons": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
+        "anime": f"https://api.themoviedb.org/3/search/multi?api_key={MOVIE_API_KEY}&query={query}",
     }
     
     url = urls[media_type]
