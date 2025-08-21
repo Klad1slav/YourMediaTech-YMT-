@@ -16,11 +16,16 @@
     padding: 2rem;
     width: calc(100% - 200px);
 }
-.media-content{
+.media-content {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
     background-color: var(--media-item-card-bg);
-    min-height: 10rem;
+    min-height: 350px; /* или больше, если хочешь */
+    position: relative; /* для абсолютного позиционирования внутри */
     margin: 0;
     margin-top: 1rem;
+    padding: 10px;
 }
 
 #modal-overlay {
@@ -143,9 +148,30 @@ header {
     color: #fff;
 }
 
-.last_row{
+.last_row {
+    position: absolute;
+    bottom: 10px; 
+    right: 10px;  
     display: flex;
-    flex-direction: row;
-    padding-bottom: 0;
-    margin-top: auto; /* Pushes .last_row to the bottom */
+    gap: 10px;
+    align-items: center;
+}
+
+.movie-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+}
+
+
+.movie-description {
+  flex-grow: 1; /* Take remaining space if available */
+}
+
+.last_row {
+  margin-top: auto; /* Push stars & delete button to bottom */
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
