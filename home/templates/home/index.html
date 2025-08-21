@@ -34,7 +34,9 @@
           <div class="card-body">
             <h5 class="card-title">{{ movie.title }}</h5>
             <p class="card-text">{{ movie.overview|truncatechars:500 }}</p>
-            <p><strong>Release:</strong> {{ movie.release_date }}</p>
+            <div class="release-date-container">
+                <p class="release-date"><strong>Release:</strong> {{ movie.release_date }}</p>
+            </div>
           </div>
         </div>
       </div>

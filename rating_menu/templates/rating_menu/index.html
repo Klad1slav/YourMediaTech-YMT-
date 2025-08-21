@@ -60,29 +60,39 @@
     </div>
         
     {% for movie in page_obj %}
-    <div class="media-content d-flex mb-4" style="gap: 10px; align-items: flex-start;">
-      <div class="movie">
-        <img src="{{ movie.poster_url }}"
-              class="img-fluid" style="max-width: 200px; height: 300px;" alt="{{ movie.title }}">
-      </div>
-      <div class="movie-info">
-        <h2>{{ movie.title }}</h2>
-        <p>{{ movie.description |truncatechars:400}}</p>
-        <p><strong>Add at: </strong>{{ movie.created_at }}</p>
-        <p><strong>Release date: </strong>{{ movie.year }}</p>
-        <div class="last_row">
-          <p><strong>Genres: </strong>{{ movie.genre }}</p>
-                  <div class="star-display ms-auto" data-rating="{{ movie.rating }}"></div>
-        <form method="POST" style="margin-top: 10px;">
+<div class="media-content d-flex mb-4" style="gap: 10px; align-items: stretch; min-height: 350px;">
+
+  <!-- Poster -->
+  <div class="movie">
+    <img src="{{ movie.poster_url }}"
+         class="img-fluid" style="max-width: 250px; height: 350px; object-fit: cover;" alt="{{ movie.title }}">
+  </div>
+
+  <!-- Info -->
+  <div class="movie-info d-flex flex-column justify-content-between" style="flex:1;">
+
+    <!-- Верхняя часть -->
+    <div>
+      <h2>{{ movie.title }}</h2>
+      <p>{{ movie.description|truncatechars:400 }}</p>
+      <p><strong>Add at: </strong>{{ movie.created_at }}</p>
+      <p><strong>Release date: </strong>{{ movie.year }}</p>
+      <p><strong>Genres: </strong>{{ movie.genre }}</p>
+    </div>
+
+    <!-- Bottom right -->
+    <div style="position: absolute; top: 300px; right: 10px; display:flex;">
+      <div class="star-display me-2" data-rating="{{ movie.rating }}"></div>
+      <form method="POST">
         {% csrf_token %}
         <input type="hidden" name="delete_movie_id" value="{{ movie.id }}">
         <button type="submit" id="delete_movie_item" class="btn btn-danger btn-sm">Delete</button>
       </form>
     </div>
-        </div>
-      </div>
 
-    {% endfor %}
+  </div>
+</div>
+{% endfor %}
   </main>
 
   <div id="modal-overlay" style="display:none;">

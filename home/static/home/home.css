@@ -47,6 +47,15 @@
   color: var(--text);
 }
 
+.media-card .card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.media-card .card-body .release-date-container {
+  margin-top: auto;
+}
+
 .pagination {
   display: flex;
   list-style: none;
