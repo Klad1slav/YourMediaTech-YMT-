@@ -144,13 +144,13 @@ def index(request, slug="films"):
                         if game_data:
                             MediaItem.objects.create(
                                 user=user,
-                                title=game_data['title'],
-                                description=game_data['description'],
-                                poster_url=game_data['poster_url'],
+                                title=game_data['title'], # type: ignore
+                                description=game_data['description'], # type: ignore
+                                poster_url=game_data['poster_url'], # type: ignore
                                 rating=int(rating),
-                                tmdb_id=game_data['id'],  # use as unique ID
-                                genre=game_data['genre'],
-                                year=datetime.datetime.strptime(game_data['release_date'], "%Y-%m-%d") if game_data['release_date'] else None,
+                                tmdb_id=game_data['id'],  # use as unique ID # type: ignore
+                                genre=game_data['genre'], # type: ignore
+                                year=datetime.datetime.strptime(game_data['release_date'], "%Y-%m-%d") if game_data['release_date'] else None, # type: ignore
                                 type=slug,
                         )
                             #form = MediaItemForm()
