@@ -131,6 +131,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+
+
+
+
+
 // Dropdown menu logic
 document.addEventListener('DOMContentLoaded', function() {
     const mainMenu = document.getElementById('main-menu');
@@ -138,14 +143,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const dropdownMenu = mainMenu.parentElement;
 
     // Example submenu data
-    const submenuOptions = {
-        genre: ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Thriller', 'Romance', 'Animation'],
-        year: ['2025', '2024', '2023', '2022', '2021', '2020'],
-        country: ['USA', 'UK', 'France', 'Germany', 'Japan', 'India'],
-        producer: ['Producer 1', 'Producer 2', 'Producer 3'],
-        director: ['Director 1', 'Director 2', 'Director 3'],
-        actor: ['Actor 1', 'Actor 2', 'Actor 3', 'Actor 4']
-    };
+const submenuOptions = {
+  genre: [
+    'Action',
+    'Comedy',
+    'Drama',
+    'Horror',
+    'Sci-Fi',
+    'Thriller',
+    'Romance',
+    'Animation'
+  ],
+
+  year: Array.from(
+    { length: 2025 - 1930 + 1 },
+    (_, i) => String(2025 - i) // keep them as strings
+  ),
+
+  country: ['USA', 'UK', 'France', 'Germany', 'Japan', 'India'],
+};
+
+console.log(submenuOptions.year);
+
 
     mainMenu.addEventListener('click', function(e) {
         if (e.target.matches('[data-submenu]')) {
@@ -156,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <li>
                   <a href="#" class="dropdown-item text-light" id="back-to-main">&larr; Back</a>
                 </li>
-                ${options.map(opt => `<li><a class="dropdown-item text-light" href="#">${opt}</a></li>`).join('')}
+                ${options.map(opt => `<li><a class="dropdown-item text-light" id="${opt}" href="#">${opt}</a></li>`).join('')}
             `;
             mainMenu.classList.add('d-none');
             submenuList.classList.remove('d-none');
@@ -175,6 +194,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // You can handle submenu option clicks here if needed
     });
 });
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const modalInput = document.querySelector('#modal-form input[name="title"]');

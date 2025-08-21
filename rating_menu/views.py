@@ -39,6 +39,35 @@ def search_game_rawg(query):
         'id': game_details.get('id'),
         'genre': [g['name'] for g in game_details.get('genres', [])]
     }
+    
+    
+def search_book_open_library(query):
+    url = f"https://openlibrary.org/search.json?q={query}"
+    
+    response = requests.get(url)
+    data = response.json()
+
+    
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+    if data['docs']:
+        book = data['docs'][0]  # First matching game
+        key = f"https://openlibrary.org/{book['key']}.json"
+        response = requests.get(key)
+        work = response.json()
+        
+        return {
+            'title': book['title'],
+            'description': work['description']['value'],
+            'poster_url': f'https://covers.openlibrary.org/b/id/{book['cover_edition_key']}.jpg',
+            'release_date': book['first_publish_year'],
+            'id': book['isbn'[0]],
+            'genre': [g for g in work.get('subjects', [])[:5]]
+            }
+    return []
+
 
 def search_media_tmdb(query, media_type)->list:
     MOVIE_API_KEY = settings.TMDB_API_KEY
@@ -46,8 +75,6 @@ def search_media_tmdb(query, media_type)->list:
         "films": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
         "series": f"https://api.themoviedb.org/3/search/tv?api_key={MOVIE_API_KEY}&query={query}",
         "toons": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
-        "books": f"https://openlibrary.org/search.json?q={query}",
-        "games": "",
         "anime": f"https://api.themoviedb.org/3/search/multi?api_key={MOVIE_API_KEY}&query={query}",
     }
     
@@ -117,13 +144,13 @@ def index(request, slug="films"):
                         if game_data:
                             MediaItem.objects.create(
                                 user=user,
-                                title=game_data['title'],
-                                description=game_data['description'],
-                                poster_url=game_data['poster_url'],
+                                title=game_data['title'], # type: ignore
+                                description=game_data['description'], # type: ignore
+                                poster_url=game_data['poster_url'], # type: ignore
                                 rating=int(rating),
-                                tmdb_id=game_data['id'],  # use as unique ID
-                                genre=game_data['genre'],
-                                year=datetime.datetime.strptime(game_data['release_date'], "%Y-%m-%d") if game_data['release_date'] else None,
+                                tmdb_id=game_data['id'],  # use as unique ID # type: ignore
+                                genre=game_data['genre'], # type: ignore
+                                year=datetime.datetime.strptime(game_data['release_date'], "%Y-%m-%d") if game_data['release_date'] else None, # type: ignore
                                 type=slug,
                         )
                             #form = MediaItemForm()
