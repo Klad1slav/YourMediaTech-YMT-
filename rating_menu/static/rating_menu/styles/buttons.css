@@ -28,3 +28,35 @@
     align-items: center;
     margin-left: 210px;
 }
+
+.pagination {
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+  gap: 5px;
+}
+
+.pagination .page-link {
+  color: var(--text); /* your text color variable */
+  background-color: var(--bg2);
+  border: 1px solid var(--header-buttons-color);
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination .page-link:hover {
+  background-color: var(--header-buttons-hover-bg);
+  color: var(--log-in-color);
+}
+
+.pagination .active .page-link {
+  background-color: var(--header-buttons-hover-bg);
+  color: var(--log-in-color);
+  border-color: var(--header-buttons-hover-bg);
+  font-weight: bold;
+  cursor: default;
+}
+

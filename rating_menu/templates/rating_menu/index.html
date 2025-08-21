@@ -59,8 +59,8 @@
     {% for movie in page_obj %}
     <div class="media-content d-flex mb-4" style="gap: 10px; align-items: flex-start;">
       <div class="movie">
-        <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_url }}"
-            class="img-fluid" style="max-width: 200px;" alt="{{ movie.title }}">
+        <img src="{{ movie.poster_url }}"
+              class="img-fluid" style="max-width: 200px; height: 300px;" alt="{{ movie.title }}">
       </div>
       <div class="movie-info">
         <h2>{{ movie.title }}</h2>
