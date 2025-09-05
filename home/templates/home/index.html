@@ -22,20 +22,19 @@
 
 <div class="home_media_items">
   <div class="row">
-    {% for movie in page_obj %}
+    {% for media in page_obj %}
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
         <div class="card h-100 media-card">
-          {% if movie.poster_path %}
-            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
-               class="card-img-top media-poster" alt="{{ movie.title }}">
+          {% if media.poster_url %}
+            <img src="{{ media.poster_url }}" class="card-img-top media-poster" alt="{{ media.title }}">
           {% else %}
             <img src="{% static 'home/images/no_image.png' %}" class="card-img-top media-poster" alt="No image available">
           {% endif %}
           <div class="card-body">
-            <h5 class="card-title">{{ movie.title }}</h5>
-            <p class="card-text">{{ movie.overview|truncatechars:500 }}</p>
+            <h5 class="card-title">{{ media.title }}</h5>
+            <p class="card-text">{{ media.overview|truncatechars:500 }}</p>
             <div class="release-date-container">
-                <p class="release-date"><strong>Release:</strong> {{ movie.release_date }}</p>
+                <p class="release-date"><strong>Release:</strong> {{ media.release_date }}</p>
             </div>
           </div>
         </div>
