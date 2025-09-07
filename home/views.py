@@ -1,4 +1,5 @@
 import requests
+from django.core.cache import cache
 from django.shortcuts import render
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -30,6 +31,7 @@ def get_tmdb_recommendations(slug):
     data = response.json()
     items_list = data.get("results", [])[:20]
 
+    
     # For TMDB media types
     if slug in ["films", "toons"]:
         for item in items_list:
@@ -52,11 +54,32 @@ def get_tmdb_recommendations(slug):
             else:
                 item["poster_url"] = ""
     elif slug == "games":
-        for item in items_list:
-            item["title"] = item.get("name")
-            item["release_date"] = item.get("released")
-            item["overview"] = item.get("description_raw", "")
-            item["poster_url"] = item.get("background_image", "")
+        enriched_list = []
+        for game in items_list:
+            game_data = {
+                "title": game.get("name"),
+                "release_date": game.get("released"),
+                "poster_url": game.get("background_image", ""),
+                "overview": ""  # fallback if no description
+            }
+
+            cache_key = f"game_details_{game['slug']}"
+            details = cache.get(cache_key)
+            if details is None:
+                details_url = f"https://api.rawg.io/api/games/{game['slug']}?key={RAWG_API_KEY}"
+                details_response = requests.get(details_url)
+                if details_response.status_code == 200:
+                    details = details_response.json()
+                    cache.set(cache_key, details, 86400)  # Cache for 24 hours
+                else:
+                    details = {}
+
+            game_data["overview"] = details.get("description_raw", "")
+
+
+            enriched_list.append(game_data)
+
+        return enriched_list
     else:
         # For other types like books or unknown, return empty list
         return []
