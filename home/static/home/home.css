@@ -87,4 +87,16 @@
   cursor: default;
 }
 
+/* Smaller posters for games */
+.game-poster {
+    width: 250px;
+    height: 350px;
+    object-fit: cover;
+}
+
+/* Bigger posters for other media */
+.other-poster {
+    width: 350px;
+    
+}
 
