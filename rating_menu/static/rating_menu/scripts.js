@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update modal image
             const modalImg = document.querySelector('#modal-form img');
             if (modalImg) {
-              modalImg.src = `https://image.tmdb.org/t/p/w300${data.image}`;
+              modalImg.src = data.image;
               modalImg.alt = data.first_title;
             }
 

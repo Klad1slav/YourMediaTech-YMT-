@@ -98,13 +98,13 @@ def create_media_item(user, title, rating, slug):
                 return []
             poster_url = media_data['poster_path']
             media_data['overview'] = details_response.json()['description_raw']
-            genre = media_data['genre']
+            genre = media_data['genre']# type: ignore
         case "books":
-            poster_url = media_data['poster_path']
-            genre = media_data['genre']
+            poster_url = media_data['poster_path']# type: ignore
+            genre = media_data['genre']# type: ignore
     print(media_data)
     try:
-        if media_data:
+        if media_data:# type: ignore
             with transaction.atomic(): #whether full success or full fail
                 MediaItem.objects.create(
                     user=user,
@@ -112,6 +112,7 @@ def create_media_item(user, title, rating, slug):
                     description=media_data['overview'], # type: ignore
                     poster_url=poster_url, # type: ignore
                     rating=int(rating),
+                    # tmdb_id=game_data['id'],  # use as unique ID # type: ignore
                     genre=genre, # type: ignore
                     year= release_date, # type: ignore
                     type=slug,
@@ -141,7 +142,7 @@ def shirt_description_modal(slug, querry):
         suggestions = search_media(querry, slug)
     except Exception as e:
         error = f"Search error: {str(e)}"
-        return error
+        return error #type:ignore
     match slug:
         case "films" | "series" | "toons" | "anime":
             suggestions[0]['poster_path'] = "https://image.tmdb.org/t/p/w300" + suggestions[0]['poster_path']

@@ -80,7 +80,7 @@
     <!-- Bottom right -->
     <div style="position: absolute; top: 300px; right: 10px; display:flex;">
       <div class="star-display me-2" data-rating="{{ movie.rating }}"></div>
-      <form method="POST">
+      <form  method="POST">
         {% csrf_token %}
         <input type="hidden" name="delete_movie_id" value="{{ movie.id }}">
         <button type="submit" id="delete_movie_item" class="btn btn-danger btn-sm">Delete</button>
@@ -118,9 +118,8 @@
                 </ul>
               </div>
             </div>
-            <!-- Image placeholder (center) -->
-            <div style="width: 160px; height: 220px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-              <img src="https://image.tmdb.org/t/p/w300{{ image }}"
+            <div class="movie" style="width: 160px; height: 220px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <img src="{{ image }}"
                    class="img-fluid"
                    style="width: 140px; height: 200px; object-fit: cover; border-radius: 10px;"
                    alt="{{ first_title }}">
