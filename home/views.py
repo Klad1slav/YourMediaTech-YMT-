@@ -54,32 +54,19 @@ def get_tmdb_recommendations(slug):
             else:
                 item["poster_url"] = ""
     elif slug == "games":
-        enriched_list = []
-        for game in items_list:
-            game_data = {
-                "title": game.get("name"),
-                "release_date": game.get("released"),
-                "poster_url": game.get("background_image", ""),
-                "overview": ""  # fallback if no description
-            }
 
-            cache_key = f"game_details_{game['slug']}"
-            details = cache.get(cache_key)
-            if details is None:
-                details_url = f"https://api.rawg.io/api/games/{game['slug']}?key={RAWG_API_KEY}"
-                details_response = requests.get(details_url)
-                if details_response.status_code == 200:
-                    details = details_response.json()
-                    cache.set(cache_key, details, 86400)  # Cache for 24 hours
-                else:
-                    details = {}
+    # Just return list with basic info (no description yet)
+        return [
+        {
+            "slug": game["slug"],
+            "title": game.get("name"),
+            "release_date": game.get("released"),
+            "poster_url": game.get("background_image", ""),
+            "overview": ""  # will be filled later
+        }
+        for game in items_list
+    ]
 
-            game_data["overview"] = details.get("description_raw", "")
-
-
-            enriched_list.append(game_data)
-
-        return enriched_list
     else:
         # For other types like books or unknown, return empty list
         return []
@@ -104,9 +91,31 @@ def home(request, slug="films"):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    if slug == "games":
+        enriched_list = []
+        for game in page_obj.object_list:
+            cache_key = f"game_details_{game['slug']}"
+            details = cache.get(cache_key)
+            if details is None:
+                print(f"RAWG REQUEST → fetching details for {game['slug']}")  # check cache hit
+                details_url = f"https://api.rawg.io/api/games/{game['slug']}?key={settings.RAWG_API_KEY}"
+                details_response = requests.get(details_url)
+                if details_response.status_code == 200:
+                    details = details_response.json()
+                    cache.set(cache_key, details, 86400)  # cache for 24h
+                else:
+                    details = {}
+                    print(f"CACHE HIT → loaded {game['slug']} from cache")  # check cache hit
+            game["overview"] = details.get("description_raw", "")
+            enriched_list.append(game)
+    else:
+        enriched_list = page_obj.object_list
+
+
 
     return render(request, "home/index.html", 
                   {'page_obj': page_obj,
+                   'enriched_list': enriched_list,
                     'slug': slug,
                      
     })

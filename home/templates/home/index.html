@@ -26,7 +26,8 @@
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
         <div class="card h-100 media-card">
           {% if media.poster_url %}
-            <img src="{{ media.poster_url }}" class="card-img-top media-poster" style="max-width: 400px; height: 500px; object-fit: cover;" alt="{{ media.title }}">
+            <img src="{{ media.poster_url }}" class="card-img-top media-poster {% if media.type == 'game' %}game-poster{% else %}other-poster{% endif %}" 
+              alt="{{ media.title }}" alt="{{ media.title }}">
           {% else %}
             <img src="{% static 'home/images/no_image.png' %}" class="card-img-top media-poster" alt="No image available">
           {% endif %}
