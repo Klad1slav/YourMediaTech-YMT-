@@ -19,29 +19,6 @@ def get_tmdb_recommendations(slug, user=None):
         "books": "",
     }
 
-    # For games: keep unchanged
-    if slug == "games":
-        url = urls.get(slug)
-        if not url:
-            return []
-        response = requests.get(url)
-        if response.status_code != 200:
-            return []
-        data = response.json()
-        items_list = data.get("results", [])[:20]
-        # Just return list with basic info (no description yet)
-        return [
-            {
-                "slug": game["slug"],
-                "title": game.get("name"),
-                "release_date": game.get("released"),
-                "poster_url": game.get("background_image", ""),
-                "overview": ""  # will be filled later
-            }
-            for game in items_list
-        ]
-
-    # For TMDB media types (films, series, anime, toons)
     # If user is provided, try personalized recommendations
     if user is not None and user.is_authenticated:
         # Get user's MediaItems with rating > 7 for the given media type
@@ -128,6 +105,75 @@ def get_tmdb_recommendations(slug, user=None):
                 item["poster_url"] = f"https://image.tmdb.org/t/p/w500{poster_path}"
             else:
                 item["poster_url"] = ""
+
+    elif slug == "games":
+
+        if user and user.is_authenticated:
+            user_items = MediaItem.objects.filter(user=user, type="games", rating__gt=7)
+            already_rated_titles = set(item.title for item in user_items if item.title)
+            recommended_games = []
+            seen_slugs = set()
+
+            for item in user_items:
+                title = item.title
+                if not title:
+                    continue
+
+                # Search RAWG to get the game slug
+                search_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={title}&page_size=1"
+                search_resp = requests.get(search_url)
+                if search_resp.status_code != 200:
+                    continue
+                results = search_resp.json().get("results", [])
+                if not results:
+                    continue
+                game_slug = results[0]["slug"]
+
+                # Fetch genres
+                game_resp = requests.get(f"https://api.rawg.io/api/games/{game_slug}?key={RAWG_API_KEY}")
+                if game_resp.status_code != 200:
+                    continue
+                genres = [g["slug"] for g in game_resp.json().get("genres", [])]
+                if not genres:
+                    continue
+
+                # Fetch top-rated games in the same genres
+                genre_query = ",".join(genres)
+                recommend_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&genres={genre_query}&ordering=-rating&page_size=10"
+                recommend_resp = requests.get(recommend_url)
+                if recommend_resp.status_code != 200:
+                    continue
+
+                for g in recommend_resp.json().get("results", []):
+                    if g["name"] in already_rated_titles:
+                        continue
+                    slug_val = g.get("slug")
+                    if not slug_val or slug_val in seen_slugs:
+                        continue
+                    seen_slugs.add(slug_val)
+                    recommended_games.append({
+                        "slug": slug_val,
+                        "title": g.get("name"),
+                        "release_date": g.get("released"),
+                        "poster_url": g.get("background_image", ""),
+                        "overview": ""
+                    })
+
+            if recommended_games:
+                return recommended_games[:20]
+
+        # Fallback to top-rated games
+        response = requests.get(f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&ordering=-rating&page_size=20")
+        if response.status_code != 200:
+            return []
+        data = response.json()
+        items_list = data.get("results", [])[:20]
+        for item in items_list:
+            item["title"] = item.get("name")
+            item["release_date"] = item.get("released")
+            item["overview"] = ""
+            item["poster_url"] = item.get("background_image", "")
+        return items_list
     else:
         # For other types like books or unknown, return empty list
         return []
