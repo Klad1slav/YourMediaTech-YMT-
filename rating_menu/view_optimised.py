@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.db import transaction
 from .forms import MediaItemForm 
 from .models import MediaItem
@@ -8,201 +8,253 @@ import datetime
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
-def search_media(query, media_type)->list:
-    MOVIE_API_KEY = settings.TMDB_API_KEY
+def search_game_rawg(query):
     RAWG_API_KEY = settings.RAWG_API_KEY
-    GOOGLE_API_KEY = "AIzaSyAUHG9KP3gl1-z0VHdWZV5E6D1v6Bwbq-M"  
+    url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={query}"
     
+    response = requests.get(url)
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+    results = data.get('results', [])
+    if not results:
+        return []
+
+    game = results[0] # Take the first result
+    slug = game['slug']
+
+    details_url = f"https://api.rawg.io/api/games/{slug}?key={RAWG_API_KEY}"
+    details_response = requests.get(details_url)
+    if details_response.status_code != 200:
+        return []
+
+    game_details = details_response.json()
+
+    return {
+        'title': game_details.get('name'),
+        'description': game_details.get('description_raw'),
+        'poster_url': game_details.get('background_image'),
+        'release_date': game_details.get('released'),
+        'id': game_details.get('id'),
+        'genre': [g['name'] for g in game_details.get('genres', [])]
+    }
+    
+def search_book_open_library(query):
+    url = f"https://openlibrary.org/search.json?q={query}"
+    
+    response = requests.get(url)
+    data = response.json()
+
+    
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+    if data['docs']:
+        book = data['docs'][0]
+
+        key = f"https://openlibrary.org/{book['key']}.json"
+        response = requests.get(key)
+        work = response.json()
+        
+        print(book['title'])
+        print(work['description'])
+        print(f'https://covers.openlibrary.org/b/id/{book['cover_i']}.jpg')
+        print(work['first_publish_date'])
+        print([g for g in work.get('subjects', [])[:5]])
+
+        if  book['cover_i']:
+            poster_url = f'https://covers.openlibrary.org/b/id/{book['cover_i']}.jpg'
+        else:
+            poster_url = "https://www.vectorstock.com/royalty-free-vectors/404-page-not-found-vectors"
+        
+        return {
+            'title': book['title'],
+            'description': work['description'],
+            'poster_url':  f'https://covers.openlibrary.org/b/id/{book['cover_i']}.jpg',
+            'release_date': work['first_publish_date'],
+            'genre': [g for g in work.get('subjects', [])[:5]]
+            }
+    return []
+
+def search_media_tmdb(query, media_type)->list:
+    MOVIE_API_KEY = settings.TMDB_API_KEY
     urls = {
         "films": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
         "series": f"https://api.themoviedb.org/3/search/tv?api_key={MOVIE_API_KEY}&query={query}",
         "toons": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",
         "anime": f"https://api.themoviedb.org/3/search/multi?api_key={MOVIE_API_KEY}&query={query}",
-        "games": f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={query}",
-        "books": f"https://www.googleapis.com/books/v1/volumes?q={query}&langRestrict=en&akey={GOOGLE_API_KEY}"
     }
+    
     url = urls[media_type]
     if not url:
         return []
-
+    
     response = requests.get(url)
     if response.status_code != 200:
-        print(response.status_code)
         return []
-    
+
     data = response.json()
-    if media_type == "books":
-        results = data.get('items', [])[:5]   
-    else: 
-        results = data.get('results', [])[:5]
-    
-    if not results:
-        return []
-    try:
+    if data['results']:
         match media_type:
             case "series":
-                for item in results:
+                for item in data['results']:
                     item['title'] = item.pop('name')
                     item['release_date'] = item.pop('first_air_date')
+            case "books":
+                pass
             case "anime":
-                for item in results:
+                # output_list = [serie for serie in data['results'] if serie["media_type"]=="tv"]
+                # data['results'] = output_list
+                for item in data['results']:
                     if item["media_type"]=="tv":
                         item['title'] = item.pop('name')
                         item['release_date'] = item.pop('first_air_date')
-            case "games":
-                for item in results:
-                    item['title'] = item.pop('name')
-                    item['poster_path'] = item.pop('background_image')
-                    item['release_date'] = item.pop('released')
-                    item['genre'] = [g['name'] for g in item.get('genres', [])]
-            case "books":
-                for item in results:
-                    item['title'] = item['volumeInfo'].get('title', '')
-                    item['overview'] = item['volumeInfo'].get('description', '')
-                    item['poster_path'] = item['volumeInfo']['imageLinks'].get('thumbnail', '')
-                    item['genre'] = item['volumeInfo'].get('categories', '')
-                    item['release_date'] = item['volumeInfo'].get('publishedDate', '')
-        return results
-    except Exception as e:
-        error = f"Search error: {str(e)}"
-    return error #type:ignore
-
-def delete_media_piece(querry, user):
-    media_id = querry
-    try:
-        item = MediaItem.objects.get(id=media_id, user = user)
-        item.delete()
-    except MediaItem.DoesNotExist:
-        pass
-
-def create_media_item(user, title, rating, slug):
-    
-    RAWG_API_KEY = settings.RAWG_API_KEY
-    media_data = search_media(title, slug)[0]
-    try:
-        release_date = datetime.datetime.strptime(media_data['release_date'], "%Y-%m-%d")
-    except Exception as e:
-        release_date = datetime.datetime.strptime(media_data['release_date'], "%Y")
+        # print(data['results'][0])
         
-    
-    match slug:
-        case "films" | "series" | "toons" | "anime":
-            genre = media_data['genre_ids']
-            poster_url = "https://image.tmdb.org/t/p/w500" + media_data['poster_path']
-        case "games":
-            
-            details_url = f"https://api.rawg.io/api/games/{media_data['id']}?key={RAWG_API_KEY}"
-            details_response = requests.get(details_url)
-            
-            if details_response.status_code != 200:
-                return []
-            poster_url = media_data['poster_path']
-            media_data['overview'] = details_response.json()['description_raw']
-            genre = media_data['genre']# type: ignore
-        case "books":
-            poster_url = media_data['poster_path']# type: ignore
-            genre = media_data['genre']# type: ignore
-    print(media_data)
-    try:
-        if media_data:# type: ignore
-            with transaction.atomic(): #whether full success or full fail
-                MediaItem.objects.create(
-                    user=user,
-                    title=media_data['title'], # type: ignore
-                    description=media_data['overview'], # type: ignore
-                    poster_url=poster_url, # type: ignore
-                    rating=int(rating),
-                    # tmdb_id=game_data['id'],  # use as unique ID # type: ignore
-                    genre=genre, # type: ignore
-                    year= release_date, # type: ignore
-                    type=slug,
-                    )
-            return
-        else:
-            error = "Media doesn't exist in database."
-    except Exception as e:
-        error = f"Save error: {str(e)}"
-    return error #type:ignore
-
-def show_suggestions_modal(slug, querry, request):
-    match slug:
-        case "films" | "series" | "toons" | "anime" | "games" | "books":
-            suggestions = search_media(querry, slug)
-        case _:
-            suggestions = []
-    if suggestions:  # Ensure suggestions is not None or empty
-        return render(request, "rating_menu/index.html", {
-            "suggestions": suggestions
-        })
-    else:
-        return JsonResponse({"error": "No suggestions found."})
-            
-def shirt_description_modal(slug, querry):
-    try:
-        suggestions = search_media(querry, slug)
-    except Exception as e:
-        error = f"Search error: {str(e)}"
-        return error #type:ignore
-    match slug:
-        case "films" | "series" | "toons" | "anime":
-            suggestions[0]['poster_path'] = "https://image.tmdb.org/t/p/w300" + suggestions[0]['poster_path']
-            
-
-    if suggestions:
-        return JsonResponse({
-            "suggestions": suggestions,
-            "first_title": suggestions[0].get("title", "Unknown Title"),
-            "image": suggestions[0].get("poster_path", "No Image Available")
-        })
-    else:
-            return JsonResponse({
-            "error": "No suggestions found.",
-            "suggestions": []
-        })
+        return data['results']#[0]  # change to make possible for seeing all possible results
+    return []
 
 def index(request, slug="films"):
     if not request.user.is_authenticated:
         return redirect('login')
     
     user = request.user
-    form = MediaItemForm(request.POST)
+    form = MediaItemForm()
     error = None
-    movie_list= MediaItem.objects.filter(user=user, type=slug).order_by('-created_at')
-    
-    # def post()
-    if request.method == "POST": 
-        # ✅ Handle deletion
-        if "delete_movie_id" in request.POST:
-            delete_media_piece(request.POST.get("delete_movie_id"), user)
-        
-        # ✅ Redirect to chosen section
+
+    # ✅ Handle deletion
+    if request.method == "POST" and "delete_movie_id" in request.POST:
+        # print(request.POST)
+        media_id = request.POST.get("delete_movie_id")
+        try:
+            item = MediaItem.objects.get(id=media_id, user=user)
+            item.delete()
+        except MediaItem.DoesNotExist:
+            pass  # optionally show a message
+        return redirect('rating_menu')  # Refresh the page
+
+    # ✅ Handle form submission
+    if request.method == "POST":
         if "media_type" in request.POST:
             slug = request.POST.get("media_type")
             return redirect('rating_menu', slug=slug)
-        
-        # ✅ Give the media/suggestions list        
-        if "suggestion" in request.POST:
-            suggestion = request.POST.get("suggestion")
-            movie_list = MediaItem.objects.filter(user=request.user, type=slug, title=suggestion)
-            
-        # ✅ Handle form submission
-        if form.is_valid():
-            title = form.cleaned_data['title']
-            rating = form.cleaned_data['rating']
-            create_media_item(user, title,rating,slug)
-        else:
-            error = "form error."
-            
-    # def get()
-    if request.method == "GET":
-        # ✅ Show suggestions in modal window
-        if "q" in request.GET:
-            return show_suggestions_modal(slug, request.GET.get("q"), request)
-            
-        if "title" in request.GET:
-            return shirt_description_modal(slug, request.GET.get("title"))
 
-    # ✅ PAGINATOR: Show 10 movies per page
+        else:
+            form = MediaItemForm(request.POST)
+            if form.is_valid():
+                
+                title = form.cleaned_data['title']
+                rating = form.cleaned_data['rating']
+                try:
+                    if slug == "games":
+                        game_data = search_game_rawg(title)
+                        if game_data:
+                            MediaItem.objects.create(
+                                user=user,
+                                title=game_data['title'], # type: ignore
+                                description=game_data['description'], # type: ignore
+                                poster_url=game_data['poster_url'], # type: ignore
+                                rating=int(rating),
+                                # tmdb_id=game_data['id'],  # use as unique ID # type: ignore
+                                genre=game_data['genre'], # type: ignore
+                                year=datetime.datetime.strptime(game_data['release_date'], "%Y-%m-%d") if game_data['release_date'] else None, # type: ignore
+                                type=slug,
+                        )
+                            #form = MediaItemForm()
+                    else:
+                        error = "Game doesn't exist in database."
+                except Exception as e:
+                    error = f"Save error: {str(e)}"
+                    
+                try:
+                    if slug == "books":
+                        print("case initialised")
+                        book_data = search_book_open_library(title)
+                        print(book_data)
+                        if book_data:
+                            MediaItem.objects.create(
+                                user=user,
+                                title=book_data['title'], # type: ignore
+                                description=book_data['description'], # type: ignore
+                                poster_url=book_data['poster_url'], # type: ignore
+                                rating=int(rating),
+                                # tmdb_id=book_data['id'],  # use as unique ID # type: ignore
+                                genre=book_data['genre'], # type: ignore
+                                
+                                year=datetime.datetime.strptime(book_data['release_date'], "%B, %Y") if book_data['release_date'] else None, # type: ignore
+                                type=slug,
+                        )
+                            #form = MediaItemForm()
+                            print("MediaItem created successfully")
+                    else:
+                        error = "Book doesn't exist in database."
+                except Exception as e:
+                    error = f"Save error: {str(e)}"
+
+                try:
+                    movie_data = search_media_tmdb(title, slug)[0]#A problem if the result is None
+                    if movie_data:
+                        with transaction.atomic():
+                            MediaItem.objects.create(
+                                user=user,
+                                title=movie_data['title'],
+                                description=movie_data['overview'],
+                                poster_url="https://image.tmdb.org/t/p/w500" + movie_data['poster_path'],
+                                rating=int(rating),
+                                tmdb_id=movie_data['id'],
+                                genre = movie_data['genre_ids'],
+                                year = datetime.datetime.strptime(movie_data['release_date'], "%Y-%m-%d"),
+                                type = slug,
+                            )
+                            # form = MediaItemForm()  
+                    else:
+                        error = "Film doest exist in TMDB database."
+                except Exception as e:
+                    error = f"Save error: {str(e)}"
+            else:
+                error = "form error."
+        suggestion = request.POST.get("suggestion")
+        print(suggestion)
+        if suggestion:
+            movie_list = MediaItem.objects.filter(user=request.user, type=slug, title=suggestion)
+        else:
+                movie_list= MediaItem.objects.filter(user=user, type=slug).order_by('-created_at')
+    else:
+        movie_list= MediaItem.objects.filter(user=user, type=slug).order_by('-created_at')
+        
+        
+        
+        
+        
+        
+    if request.method == "GET" and "q" in request.GET:
+        query = request.GET.get("q")
+        suggestions = search_media_tmdb(query, slug)
+            
+        if suggestions:
+            # print(suggestions[:6])
+            return render(request, "rating_menu/index.html", {
+            "suggestions": suggestions
+    })
+    if request.method == "GET" and "title" in request.GET:
+        
+        query = request.GET.get("title")
+        suggestions = search_media_tmdb(query, slug)
+        if "title" in request.GET:
+            return JsonResponse({
+            "suggestions": suggestions,
+            "first_title": suggestions[0]["title"],
+            "image": suggestions[0]["poster_path"]
+            })
+    
+    
+    
+    
+    
+    
+    # PAGINATOR: Show 10 movies per page
     paginator = Paginator(movie_list, 10)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -214,4 +266,3 @@ def index(request, slug="films"):
         "error": error,
         "slug": slug
     })
-    

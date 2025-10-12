@@ -59,4 +59,22 @@
   font-weight: bold;
   cursor: default;
 }
+.arrow-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+}
+.arrow-btn:hover {
+  background-color: rgba(200, 200, 200, 0.9);
+}
 

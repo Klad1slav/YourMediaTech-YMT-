@@ -7,6 +7,7 @@ import requests
 import datetime
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 
 def search_media(query, media_type)->list:
     MOVIE_API_KEY = settings.TMDB_API_KEY
@@ -102,13 +103,13 @@ def create_media_item(user, title, rating, slug):
                 return []
             poster_url = media_data['poster_path']
             media_data['overview'] = details_response.json()['description_raw']
-            genre = media_data['genre']
+            genre = media_data['genre']# type: ignore
         case "books":
-            poster_url = media_data['poster_path']
-            genre = media_data['genre']
-    print(media_data)
+            poster_url = media_data['poster_path']# type: ignore
+            genre = media_data['genre']# type: ignore
+    # print(media_data)
     try:
-        if media_data:
+        if media_data:# type: ignore
             with transaction.atomic(): #whether full success or full fail
                 MediaItem.objects.create(
                     user=user,
@@ -117,6 +118,7 @@ def create_media_item(user, title, rating, slug):
                     description=media_data['overview'], # type: ignore
                     poster_url=poster_url, # type: ignore
                     rating=int(rating),
+                    # tmdb_id=game_data['id'],  # use as unique ID # type: ignore
                     genre=genre, # type: ignore
                     year= release_date, # type: ignore
                     type=slug,
@@ -129,11 +131,8 @@ def create_media_item(user, title, rating, slug):
     return error #type:ignore
 
 def show_suggestions_modal(slug, querry, request):
-    match slug:
-        case "films" | "series" | "toons" | "anime" | "games" | "books":
-            suggestions = search_media(querry, slug)
-        case _:
-            suggestions = []
+    suggestions = search_media(querry, slug)
+
     if suggestions:  # Ensure suggestions is not None or empty
         return render(request, "rating_menu/index.html", {
             "suggestions": suggestions
@@ -141,28 +140,21 @@ def show_suggestions_modal(slug, querry, request):
     else:
         return JsonResponse({"error": "No suggestions found."})
             
-def shirt_description_modal(slug, querry):
-    try:
-        suggestions = search_media(querry, slug)
-    except Exception as e:
-        error = f"Search error: {str(e)}"
-        return error
+def shirt_description_modal(slug, querry, request):
+    suggestions = search_media(querry, slug)
+
     match slug:
         case "films" | "series" | "toons" | "anime":
-            suggestions[0]['poster_path'] = "https://image.tmdb.org/t/p/w300" + suggestions[0]['poster_path']
-            
-
+            for suggestion in suggestions:
+                suggestion['poster_path'] = (
+                "https://image.tmdb.org/t/p/w300" + suggestion['poster_path']
+                if suggestion.get('poster_path')
+                else "https://image.tmdb.org/t/p/w300/ponf6oGL9tE7l2EysogAiAD50hr.jpg"
+)
     if suggestions:
-        return JsonResponse({
-            "suggestions": suggestions,
-            "first_title": suggestions[0].get("title", "Unknown Title"),
-            "image": suggestions[0].get("poster_path", "No Image Available")
-        })
-    else:
-            return JsonResponse({
-            "error": "No suggestions found.",
-            "suggestions": []
-        })
+        data = suggestions
+        # print("Data being passed to template:", data)
+        return JsonResponse(data, DjangoJSONEncoder, safe=False)
 
 def index(request, slug="films"):
     if not request.user.is_authenticated:
@@ -186,7 +178,7 @@ def index(request, slug="films"):
         
         # ✅ Give the media/suggestions list        
         if "suggestion" in request.POST:
-            suggestion = request.POST.get("suggestion")
+            suggestion = request.POST.get("suggestion") 
             movie_list = MediaItem.objects.filter(user=request.user, type=slug, title=suggestion)
             
         # ✅ Handle form submission
@@ -204,7 +196,7 @@ def index(request, slug="films"):
             return show_suggestions_modal(slug, request.GET.get("q"), request)
             
         if "title" in request.GET:
-            return shirt_description_modal(slug, request.GET.get("title"))
+            return shirt_description_modal( slug, request.GET.get("title"), request)
 
     # ✅ PAGINATOR: Show 10 movies per page
     paginator = Paginator(movie_list, 10)  
@@ -218,4 +210,3 @@ def index(request, slug="films"):
         "error": error,
         "slug": slug
     })
-    

@@ -1,19 +1,20 @@
 function showForm() {
     document.getElementById('modal-overlay').style.display = 'flex';
 }
+
+document.querySelector('.js-show-form').onclick = showForm;
+
 function hideForm() {
     document.getElementById('modal-overlay').style.display = 'none';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('.btn.btn-success').onclick = showForm;
-});
+document.querySelector('.js-hide-form').onclick = hideForm;
+
 
 // Star rating logic for 0.5 increments, 1-10 scale
-document.addEventListener('DOMContentLoaded', function() {
+
     
     const starContainer = document.getElementById('star-rating');
-    if (!starContainer) return;
 
     let rating = 0; // 0 to 10, increments of 1
     let hoverRating = 0;
@@ -92,12 +93,12 @@ document.addEventListener('DOMContentLoaded', function() {
             starContainer.appendChild(star);
         }
     }
-    renderStars();
-});
+    if (starContainer) renderStars();
 
 
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('.star-display').forEach(function (container) {
+
+
+  document.querySelectorAll('.star-display').forEach( container => {
     const rating = parseFloat(container.dataset.rating);
 
     for (let i = 1; i <= 5; i++) {
@@ -127,146 +128,166 @@ document.addEventListener('DOMContentLoaded', function () {
       `;
       container.appendChild(star);
     }
+});
+
+//show suggestions modal
+const modalInput = document.querySelector('#modal-form input[name="title"]');
+const suggestionsModal = document.getElementById('suggestions_modal');
+if (modalInput || suggestionsModal) {
+  modalInput.addEventListener('input', function() {
+      const query = modalInput.value.trim();
+      suggestionsModal.innerHTML = '';
+      if (query.length === 0) {
+          suggestionsModal.style.display = 'none';
+          return;
+      }
+      fetch(`${window.location.pathname}?q=${encodeURIComponent(query)}`)
+          .then(response => response.text())
+          .then(html => {
+              // Create a temporary DOM to extract suggestions from the returned HTML
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = html;
+              const newSuggestions = tempDiv.querySelectorAll('#suggestions_modal li.list-group-item');
+              if (newSuggestions.length >=5){
+                suggestionsModal.innerHTML = '';
+              }
+
+              if (newSuggestions.length > 0) {
+                  newSuggestions.forEach(li => {
+                      const newLi = document.createElement('li');
+                      newLi.className = 'list-group-item';
+                      newLi.textContent = li.textContent;
+                      newLi.setAttribute('data-title', li.getAttribute('data-title'));
+                      newLi.onclick = function() {
+                          modalInput.value = newLi.textContent;
+                          suggestionsModal.innerHTML = '';
+                          suggestionsModal.style.display = 'none';
+                      };
+                      suggestionsModal.appendChild(newLi);
+                  });
+                  suggestionsModal.style.display = 'block';
+              } else {
+                  suggestionsModal.style.display = 'none';
+              }
+          })
+          .catch(() => {
+              suggestionsModal.style.display = 'none';
+          });
   });
-});
+}
 
-
-
-
-
-
-
-// Dropdown menu logic
-document.addEventListener('DOMContentLoaded', function() {
-    const mainMenu = document.getElementById('main-menu');
-    const submenuList = document.getElementById('submenu-list');
-    const dropdownMenu = mainMenu.parentElement;
-
-    // Example submenu data
-const submenuOptions = {
-  genre: [
-    'Action',
-    'Comedy',
-    'Drama',
-    'Horror',
-    'Sci-Fi',
-    'Thriller',
-    'Romance',
-    'Animation'
-  ],
-
-  year: Array.from(
-    { length: 2025 - 1930 + 1 },
-    (_, i) => String(2025 - i) // keep them as strings
-  ),
-
-  country: ['USA', 'UK', 'France', 'Germany', 'Japan', 'India'],
-};
-
-console.log(submenuOptions.year);
-
-
-    mainMenu.addEventListener('click', function(e) {
-        if (e.target.matches('[data-submenu]')) {
-            e.preventDefault();
-            const submenuKey = e.target.getAttribute('data-submenu');
-            const options = submenuOptions[submenuKey] || [];
-            submenuList.innerHTML = `
-                <li>
-                  <a href="#" class="dropdown-item text-light" id="back-to-main">&larr; Back</a>
-                </li>
-                ${options.map(opt => `<li><a class="dropdown-item text-light" id="${opt}" href="#">${opt}</a></li>`).join('')}
-            `;
-            mainMenu.classList.add('d-none');
-            submenuList.classList.remove('d-none');
-            // Make submenu scrollable if too long
-            submenuList.style.maxHeight = '200px';
-            submenuList.style.overflowY = 'auto';
-        }
-    });
-
-    submenuList.addEventListener('click', function(e) {
-        if (e.target.id === 'back-to-main') {
-            e.preventDefault();
-            submenuList.classList.add('d-none');
-            mainMenu.classList.remove('d-none');
-        }
-        // You can handle submenu option clicks here if needed
-    });
-});
-
-
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    const modalInput = document.querySelector('#modal-form input[name="title"]');
-    const suggestionsModal = document.getElementById('suggestions_modal');
-    if (!modalInput || !suggestionsModal) return;
-
-    modalInput.addEventListener('input', function() {
-        const query = modalInput.value.trim();
-        suggestionsModal.innerHTML = '';
-        if (query.length === 0) {
-            suggestionsModal.style.display = 'none';
-            return;
-        }
-        fetch(`${window.location.pathname}?q=${encodeURIComponent(query)}`)
-            .then(response => response.text())
-            .then(html => {
-                // Create a temporary DOM to extract suggestions from the returned HTML
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                const newSuggestions = tempDiv.querySelectorAll('#suggestions_modal li.list-group-item');
-                if (newSuggestions.length > 0) {
-                    newSuggestions.forEach(li => {
-                        const newLi = document.createElement('li');
-                        newLi.className = 'list-group-item';
-                        newLi.textContent = li.textContent;
-                        newLi.setAttribute('data-title', li.getAttribute('data-title'));
-                        newLi.onclick = function() {
-                            modalInput.value = newLi.textContent;
-                            suggestionsModal.innerHTML = '';
-                            suggestionsModal.style.display = 'none';
-                        };
-                        suggestionsModal.appendChild(newLi);
-                    });
-                    suggestionsModal.style.display = 'block';
-                } else {
-                    suggestionsModal.style.display = 'none';
-                }
-            })
-            .catch(() => {
-                suggestionsModal.style.display = 'none';
-            });
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  const suggestionsModal = document.getElementById('suggestions_modal');
+let description_data = "";
+let curentIndex = 0;
   if (suggestionsModal) {
-    suggestionsModal.addEventListener('click', function(e) {
+    const modalImg = document.querySelector('#modal-form img');
+    const modalTitle = document.querySelector('#gallery-title')
+    const nextButton = document.querySelector('#next-btn')
+    const prevButton = document.querySelector('#prev-btn')
+    //show description modal
+    suggestionsModal.addEventListener('click', e => {
       if (e.target && e.target.matches('li.list-group-item')) {
         const title = e.target.getAttribute('data-title');
-        fetch(`${window.location.pathname}?title=${encodeURIComponent(title)}&ajax=1`)
+        // console.log(`${window.location.pathname}?title=${encodeURIComponent(title)}`)
+        fetch(`${window.location.pathname}?title=${encodeURIComponent(title)}`)
           .then(response => response.json())
           .then(data => {
-            // Update modal title
-            const modalTitle = document.querySelector('#modal-form h2');
-            if (modalTitle) modalTitle.textContent = data.first_title;
+            curentIndex = 0;
+            description_data = data;
 
-            // Update modal image
-            const modalImg = document.querySelector('#modal-form img');
-            if (modalImg) {
-              modalImg.src = data.image;
-              modalImg.alt = data.first_title;
-            }
-
-            // Optionally hide suggestions
+            modalTitle.textContent = data[curentIndex].title;
+            modalImg.src = data[curentIndex].poster_path;
+            modalImg.alt = data[curentIndex].title;
+            console.log(description_data) //delete later
             suggestionsModal.style.display = 'none';
           });
       }
     });
-  }
-});
+    nextButton.addEventListener('click', event=>{
+      console.log(description_data.length)
+      if(!(description_data.length <= 1) && curentIndex < description_data.length-1){
+        curentIndex+=1;
+        console.log(curentIndex);
+        modalTitle.textContent = description_data[curentIndex].title;
+        modalImg.src = description_data[curentIndex].poster_path;
+        modalImg.alt = description_data[curentIndex].title;
+    }else if(curentIndex >= description_data.length-1){
+        curentIndex = 0;
+        modalTitle.textContent = description_data[curentIndex].title;
+        modalImg.src = description_data[curentIndex].poster_path;
+        modalImg.alt = description_data[curentIndex].title;
+    }
+  });
+        prevButton.addEventListener('click', event=>{
+      console.log(description_data.length)
+      if(!(description_data.length <= 1) && curentIndex > 0){
+          curentIndex-=1;
+        console.log(curentIndex);
+        modalTitle.textContent = description_data[curentIndex].title;
+        modalImg.src = description_data[curentIndex].poster_path;
+        modalImg.alt = description_data[curentIndex].title;
+    } else if(curentIndex <= 0){
+      curentIndex = description_data.length-1;
+        modalTitle.textContent = description_data[curentIndex].title;
+        modalImg.src = description_data[curentIndex].poster_path;
+        modalImg.alt = description_data[curentIndex].title;
+    }
+  });
+}
 
+// function changeShortDescription(title, imgSrc, imgAlt){}
+
+  // Dropdown menu logic
+//     const mainMenu = document.getElementById('main-menu');
+//     const submenuList = document.getElementById('submenu-list');
+//     const dropdownMenu = mainMenu.parentElement;
+
+//     // Example submenu data
+// const submenuOptions = {
+//   genre: [
+//     'Action',
+//     'Comedy',
+//     'Drama',
+//     'Horror',
+//     'Sci-Fi',
+//     'Thriller',
+//     'Romance',
+//     'Animation'
+//   ],
+
+//   year: Array.from(
+//     { length: 2025 - 1930 + 1 },
+//     (_, i) => String(2025 - i) // keep them as strings
+//   ),
+
+//   country: ['USA', 'UK', 'France', 'Germany', 'Japan', 'India'],
+// };
+
+// console.log(submenuOptions.year);
+
+
+//     mainMenu.addEventListener('click', function(e) {
+//         if (e.target.matches('[data-submenu]')) {
+//             e.preventDefault();
+//             const submenuKey = e.target.getAttribute('data-submenu');
+//             const options = submenuOptions[submenuKey] || [];
+//             submenuList.innerHTML = `
+//                 <li>
+//                   <a href="#" class="dropdown-item text-light" id="back-to-main">&larr; Back</a>
+//                 </li>
+//                 ${options.map(opt => `<li><a class="dropdown-item text-light" id="${opt}" href="#">${opt}</a></li>`).join('')}
+//             `;
+//             mainMenu.classList.add('d-none');
+//             submenuList.classList.remove('d-none');
+//             // Make submenu scrollable if too long
+//             submenuList.style.maxHeight = '200px';
+//             submenuList.style.overflowY = 'auto';
+//         }
+//     });
+
+//     submenuList.addEventListener('click', function(e) {
+//         if (e.target.id === 'back-to-main') {
+//             e.preventDefault();
+//             submenuList.classList.add('d-none');
+//             mainMenu.classList.remove('d-none');
+//         }
+//     });
