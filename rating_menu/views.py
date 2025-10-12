@@ -45,17 +45,20 @@ def search_media(query, media_type)->list:
                 for item in results:
                     item['title'] = item.pop('name')
                     item['release_date'] = item.pop('first_air_date')
+                    item['id'] = item.get('id', '')
             case "anime":
                 for item in results:
                     if item["media_type"]=="tv":
                         item['title'] = item.pop('name')
                         item['release_date'] = item.pop('first_air_date')
+                        item['id'] = item.get('id', '')
             case "games":
                 for item in results:
                     item['title'] = item.pop('name')
                     item['poster_path'] = item.pop('background_image')
                     item['release_date'] = item.pop('released')
                     item['genre'] = [g['name'] for g in item.get('genres', [])]
+                    item['id'] = item.get('id', '')
             case "books":
                 for item in results:
                     item['title'] = item['volumeInfo'].get('title', '')
@@ -63,6 +66,7 @@ def search_media(query, media_type)->list:
                     item['poster_path'] = item['volumeInfo']['imageLinks'].get('thumbnail', '')
                     item['genre'] = item['volumeInfo'].get('categories', '')
                     item['release_date'] = item['volumeInfo'].get('publishedDate', '')
+                    item['id'] = item.get('id', '')
         return results
     except Exception as e:
         error = f"Search error: {str(e)}"
@@ -109,6 +113,7 @@ def create_media_item(user, title, rating, slug):
             with transaction.atomic(): #whether full success or full fail
                 MediaItem.objects.create(
                     user=user,
+                    tmdb_id=media_data['id'],
                     title=media_data['title'], # type: ignore
                     description=media_data['overview'], # type: ignore
                     poster_url=poster_url, # type: ignore

@@ -4,10 +4,10 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.shortcuts import redirect
+from rating_menu.models import MediaItem
 
 
-
-def get_tmdb_recommendations(slug):
+def get_tmdb_recommendations(slug, user=None):
     API_KEY = settings.TMDB_API_KEY
     RAWG_API_KEY = settings.RAWG_API_KEY
     urls = {
@@ -19,6 +19,60 @@ def get_tmdb_recommendations(slug):
         "books": "",
     }
 
+    # If user is provided, try personalized recommendations
+    if user is not None and user.is_authenticated:
+        # Get user's MediaItems with rating > 7 for the given media type
+        user_items = MediaItem.objects.filter(user=user, type=slug, rating__gt=7)
+        recommended_items = []
+        seen_ids = set()
+        for item in user_items:
+            # Determine TMDB media type and id
+            tmdb_id = item.tmdb_id
+            if not tmdb_id:
+                continue
+            if slug in ["films", "toons"]:
+                rec_url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/recommendations?api_key={API_KEY}&language=en-US&page=1"
+            elif slug in ["series", "anime"]:
+                rec_url = f"https://api.themoviedb.org/3/tv/{tmdb_id}/recommendations?api_key={API_KEY}&language=en-US&page=1"
+            else:
+                rec_url = None
+
+            if not rec_url:
+                continue
+
+            rec_response = requests.get(rec_url)
+            if rec_response.status_code != 200:
+                continue
+            rec_data = rec_response.json()
+            rec_results = rec_data.get("results", [])[:20]
+            for rec_item in rec_results:
+                rec_id = rec_item.get("id")
+                if rec_id in seen_ids:
+                    continue
+                seen_ids.add(rec_id)
+                # Normalize fields
+                if slug in ["films", "toons"]:
+                    title = rec_item.get("title")
+                    release_date = rec_item.get("release_date")
+                else:
+                    title = rec_item.get("name")
+                    release_date = rec_item.get("first_air_date")
+                overview = rec_item.get("overview", "")
+                poster_path = rec_item.get("poster_path")
+                poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else ""
+                recommended_items.append({
+                    "id": rec_id,
+                    "title": title,
+                    "release_date": release_date,
+                    "overview": overview,
+                    "poster_url": poster_url,
+                })
+
+        if recommended_items:
+            # Return up to 20 personalized recommendations
+            return recommended_items[:20]
+
+    # If no personalized recommendations or no user, fallback to top_rated
     url = urls.get(slug)
     if not url:
         return []
@@ -26,13 +80,11 @@ def get_tmdb_recommendations(slug):
     response = requests.get(url)
     if response.status_code != 200:
         return []
-    
 
     data = response.json()
     items_list = data.get("results", [])[:20]
 
-    
-    # For TMDB media types
+    # Normalize fields for TMDB media types
     if slug in ["films", "toons"]:
         for item in items_list:
             item["title"] = item.get("title")
@@ -53,20 +105,75 @@ def get_tmdb_recommendations(slug):
                 item["poster_url"] = f"https://image.tmdb.org/t/p/w500{poster_path}"
             else:
                 item["poster_url"] = ""
+
     elif slug == "games":
 
-    # Just return list with basic info (no description yet)
-        return [
-        {
-            "slug": game["slug"],
-            "title": game.get("name"),
-            "release_date": game.get("released"),
-            "poster_url": game.get("background_image", ""),
-            "overview": ""  # will be filled later
-        }
-        for game in items_list
-    ]
+        if user and user.is_authenticated:
+            user_items = MediaItem.objects.filter(user=user, type="games", rating__gt=7)
+            already_rated_titles = set(item.title for item in user_items if item.title)
+            recommended_games = []
+            seen_slugs = set()
 
+            for item in user_items:
+                title = item.title
+                if not title:
+                    continue
+
+                # Search RAWG to get the game slug
+                search_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={title}&page_size=1"
+                search_resp = requests.get(search_url)
+                if search_resp.status_code != 200:
+                    continue
+                results = search_resp.json().get("results", [])
+                if not results:
+                    continue
+                game_slug = results[0]["slug"]
+
+                # Fetch genres
+                game_resp = requests.get(f"https://api.rawg.io/api/games/{game_slug}?key={RAWG_API_KEY}")
+                if game_resp.status_code != 200:
+                    continue
+                genres = [g["slug"] for g in game_resp.json().get("genres", [])]
+                if not genres:
+                    continue
+
+                # Fetch top-rated games in the same genres
+                genre_query = ",".join(genres)
+                recommend_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&genres={genre_query}&ordering=-rating&page_size=10"
+                recommend_resp = requests.get(recommend_url)
+                if recommend_resp.status_code != 200:
+                    continue
+
+                for g in recommend_resp.json().get("results", []):
+                    if g["name"] in already_rated_titles:
+                        continue
+                    slug_val = g.get("slug")
+                    if not slug_val or slug_val in seen_slugs:
+                        continue
+                    seen_slugs.add(slug_val)
+                    recommended_games.append({
+                        "slug": slug_val,
+                        "title": g.get("name"),
+                        "release_date": g.get("released"),
+                        "poster_url": g.get("background_image", ""),
+                        "overview": ""
+                    })
+
+            if recommended_games:
+                return recommended_games[:20]
+
+        # Fallback to top-rated games
+        response = requests.get(f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&ordering=-rating&page_size=20")
+        if response.status_code != 200:
+            return []
+        data = response.json()
+        items_list = data.get("results", [])[:20]
+        for item in items_list:
+            item["title"] = item.get("name")
+            item["release_date"] = item.get("released")
+            item["overview"] = ""
+            item["poster_url"] = item.get("background_image", "")
+        return items_list
     else:
         # For other types like books or unknown, return empty list
         return []
@@ -84,7 +191,7 @@ def home(request, slug="films"):
             slug = request.POST.get("media_type")
             return redirect('home', slug=slug)
     
-    items_list = get_tmdb_recommendations(slug)
+    items_list = get_tmdb_recommendations(slug, user=request.user)
     
     # PAGINATOR: Show 20 movies per page
     paginator = Paginator(items_list, 12)  
