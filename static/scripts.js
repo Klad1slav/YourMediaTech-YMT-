@@ -15,6 +15,8 @@ function toggleLight() {
     document.body.classList.toggle('light-mode');
 }
 
+//Show suggestions
+
 const searchInput = document.querySelector('.input-group input.form-control');
 const suggestionsList = document.getElementById('suggestions');
 const suggestionForm = document.getElementById('suggestion-form');
