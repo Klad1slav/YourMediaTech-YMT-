@@ -32,6 +32,10 @@
         </div>
       </div>
     </div>
+
+
+
+    
     {% include "includes/header_buttons.html" %}
   </div>
 
@@ -98,7 +102,6 @@
         <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-start mb-3">
             <!-- Search bar (top left) -->
-            <div style="width: 40%;">
               <div class="input-group">
                 <span class="input-group-text" id="search-icon-modal">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -116,9 +119,6 @@
                   {% endfor %}
                 </ul>
               </div>
-            </div>
-
-
 
             <div class="movie position-relative"
              style="width: 160px; height: 220px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
@@ -141,7 +141,6 @@
               <img src=""
                    id="gallery-image"
                    class="img-fluid"
-                   style="width: 140px; height: 200px; object-fit: cover; border-radius: 10px;"
                    alt="">
             </div>
 
@@ -204,3 +203,33 @@
 </nav>
 <h1 color="white">{{suggestions}}</h1>
 {%endblock%}
+
+
+{% comment %}       <table>
+        <tr>
+          <td>      <span class="input-group-text" id="search-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+        </svg>
+      </span>
+    </td>
+    <td>
+    </td>
+        </tr>
+              <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="search-icon">
+      <button type="button" class="btn btn-success js-show-form">Add new</button>
+
+        <tr>
+          <td>
+                  <form method="post" id="suggestion-form" autocomplete="off">
+        {% csrf_token %}
+        <input type="hidden" name="suggestion" id="suggestion-input">
+        <ul id="suggestions" class="list-group mt-2" style="display:none;">
+            {% for movie in movies|slice:":6" %}
+                <li class="list-group-item" data-title="{{ movie.title }}">{{ movie.title }}</li>
+            {% endfor %}
+        </ul>
+    </form>
+          </td>
+        </tr>
+      </table> {% endcomment %}
