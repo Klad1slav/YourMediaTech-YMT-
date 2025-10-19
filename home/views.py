@@ -193,7 +193,7 @@ def get_tmdb_recommendations(slug, user=None):
                 if search_resp.status_code != 200:
                     continue
                 data = search_resp.json()
-                for b in data.get("items", [])[:20]:
+                for b in data.get("items", ):
                     book_id = b.get("id")
                     if not book_id or book_id in seen_ids:
                         continue
