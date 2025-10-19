@@ -170,12 +170,12 @@ def index(request, slug="films"):
         # ✅ Handle deletion
         if "delete_movie_id" in request.POST:
             delete_media_piece(request.POST.get("delete_movie_id"), user)
-        
+
         # ✅ Redirect to chosen section
         if "media_type" in request.POST:
             slug = request.POST.get("media_type")
             return redirect('rating_menu', slug=slug)
-        
+
         # ✅ Give the media/suggestions list        
         if "suggestion" in request.POST:
             suggestion = request.POST.get("suggestion") 
@@ -189,8 +189,7 @@ def index(request, slug="films"):
             create_media_item(user, title,rating,slug, obj_index)
         else:
             error = "form error."
-            
-    # def get()
+
     if request.method == "GET":
         # ✅ Show suggestions in modal window
         if "q" in request.GET:
