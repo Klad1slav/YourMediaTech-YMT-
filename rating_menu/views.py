@@ -12,7 +12,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 def search_media(query, media_type)->list:
     MOVIE_API_KEY = settings.TMDB_API_KEY
     RAWG_API_KEY = settings.RAWG_API_KEY
-    GOOGLE_API_KEY = "AIzaSyAUHG9KP3gl1-z0VHdWZV5E6D1v6Bwbq-M"  
+    GOOGLE_API_KEY = settings.GOOGLE_API_KEY  
     
     urls = {
         "films": f"https://api.themoviedb.org/3/search/movie?api_key={MOVIE_API_KEY}&query={query}",

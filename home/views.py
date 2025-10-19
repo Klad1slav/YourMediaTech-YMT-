@@ -10,13 +10,14 @@ from rating_menu.models import MediaItem
 def get_tmdb_recommendations(slug, user=None):
     API_KEY = settings.TMDB_API_KEY
     RAWG_API_KEY = settings.RAWG_API_KEY
+    GOOGLE_API_KEY = settings.GOOGLE_API_KEY
     urls = {
         "films": f"https://api.themoviedb.org/3/movie/top_rated?api_key={API_KEY}&language=en-US&page=1",
         "series": f"https://api.themoviedb.org/3/tv/top_rated?api_key={API_KEY}&language=en-US&page=1",
         "anime": f"https://api.themoviedb.org/3/tv/top_rated?api_key={API_KEY}&language=en-US&page=1",
         "toons": f"https://api.themoviedb.org/3/movie/top_rated?api_key={API_KEY}&language=en-US&page=1",
         "games": f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&ordering=-rating&page_size=20",
-        "books": "",
+        "books": f"https://www.googleapis.com/books/v1/volumes?q={slug}&langRestrict=en&key={GOOGLE_API_KEY}"
     }
 
     # If user is provided, try personalized recommendations
@@ -174,8 +175,56 @@ def get_tmdb_recommendations(slug, user=None):
             item["overview"] = ""
             item["poster_url"] = item.get("background_image", "")
         return items_list
+    
+    
+    elif slug == "books":
+        if user and user.is_authenticated:
+            user_items = MediaItem.objects.filter(user=user, type="books", rating__gt=7)
+            recommended_books = []
+            seen_ids = set()
+            for item in user_items:
+                title = item.title
+                if not title:
+                    continue
+                # Search for similar books based on title keywords
+                query = title.split()[0]  # use first word as base query
+                search_url = f"https://www.googleapis.com/books/v1/volumes?q={query}&key={GOOGLE_API_KEY}&maxResults=5&langRestrict=en"
+                search_resp = requests.get(search_url)
+                if search_resp.status_code != 200:
+                    continue
+                data = search_resp.json()
+                for b in data.get("items", [])[:20]:
+                    book_id = b.get("id")
+                    if not book_id or book_id in seen_ids:
+                        continue
+                    seen_ids.add(book_id)
+                    info = b.get("volumeInfo", {})
+                    recommended_books.append({
+                        "id": book_id,
+                        "title": info.get("title"),
+                        "release_date": info.get("publishedDate", ""),
+                        "overview": info.get("description", ""),
+                        "poster_url": info.get("imageLinks", {}).get("thumbnail", ""),
+                    })
+            if recommended_books:
+                return recommended_books[:20]
+        # Fallback: popular books if no personalized ones
+        response = requests.get(f"https://www.googleapis.com/books/v1/volumes?q=bestsellers&key={GOOGLE_API_KEY}&maxResults=20&langRestrict=en")
+        if response.status_code != 200:
+            return []
+        data = response.json()
+        items_list = []
+        for b in data.get("items", []):
+            info = b.get("volumeInfo", {})
+            items_list.append({
+                "id": b.get("id"),
+                "title": info.get("title"),
+                "release_date": info.get("publishedDate", ""),
+                "overview": info.get("description", ""),
+                "poster_url": info.get("imageLinks", {}).get("thumbnail", ""),
+            })
+        return items_list
     else:
-        # For other types like books or unknown, return empty list
         return []
 
     return items_list
