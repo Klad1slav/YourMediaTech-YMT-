@@ -77,4 +77,21 @@
 .arrow-btn:hover {
   background-color: rgba(200, 200, 200, 0.9);
 }
-
+#prev-btn{
+  position: absolute; 
+  top: 50%; 
+  left: 10px;
+  transform: translateY(-50%);
+}
+#next-btn{
+  position: absolute; 
+  top: 50%; 
+  right: 10px;
+  transform: translateY(-50%);
+}
+#gallery-image{
+  width: 140px; 
+  height: 200px; 
+  object-fit: cover; 
+  border-radius: 10px;
+}

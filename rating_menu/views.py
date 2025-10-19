@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 
+
 def search_media(query, media_type)->list:
     MOVIE_API_KEY = settings.TMDB_API_KEY
     RAWG_API_KEY = settings.RAWG_API_KEY
@@ -22,6 +23,7 @@ def search_media(query, media_type)->list:
         "games": f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={query}",
         "books": f"https://www.googleapis.com/books/v1/volumes?q={query}&langRestrict=en&akey={GOOGLE_API_KEY}"
     }
+        
     url = urls[media_type]
     if not url:
         return []
@@ -82,6 +84,7 @@ def delete_media_piece(querry, user):
 
 def create_media_item(user, title, rating, slug, index):
     
+    MOVIE_API_KEY = settings.TMDB_API_KEY
     RAWG_API_KEY = settings.RAWG_API_KEY
     media_data = search_media(title, slug)[index]
     try:
@@ -89,11 +92,25 @@ def create_media_item(user, title, rating, slug, index):
     except Exception as e:
         release_date = datetime.datetime.strptime(media_data['release_date'], "%Y")
         
-    
     match slug:
         case "films" | "series" | "toons" | "anime":
-            genre = media_data['genre_ids']
+            
+            genres_urls = {
+                'films': f"https://api.themoviedb.org/3/genre/movie/list?api_key={MOVIE_API_KEY}&language=en",
+                'tv': f"https://api.themoviedb.org/3/genre/tv/list?api_key={MOVIE_API_KEY}&language=en",
+            }
+            genres_dict = []
+            for url_g in genres_urls.values():
+                response = requests.get(url_g)
+                data = response.json()
+                results = data.get('genres', [])
+                for object in results:
+                    genres_dict.append(object)
+            genre = [genre["name"] for genre in genres_dict if genre['id'] in media_data['genre_ids']]
+            
             poster_url = "https://image.tmdb.org/t/p/w500" + media_data['poster_path']
+            for one_genre in genre:
+                pass
         case "games":
             
             details_url = f"https://api.rawg.io/api/games/{media_data['id']}?key={RAWG_API_KEY}"
