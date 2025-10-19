@@ -13,6 +13,7 @@
     <link href="{%static "others.css"%}" rel="stylesheet">
     <link href="{%static "text.css"%}" rel="stylesheet">
     <link href="{%static "buttons.css"%}" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{%static "images/Icon.png"%}">
     {%block css_files%}
     {%endblock%}
 </head>
@@ -43,7 +44,6 @@
                  <!-- Bootstrap dropdown menu -->
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="/home">Home</a></li>
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li><a class="dropdown-item" href="{%url "rating_menu" "films"%}">Library</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>

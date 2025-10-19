@@ -12,6 +12,7 @@ class MediaItem(models.Model):
     genre = models.CharField(max_length=100, blank=True, null=True)
     year = models.DateField(blank=True, null=True)
     type = models.SlugField()
+    index = models.IntegerField(default=0)
     
 
     def __str__(self):

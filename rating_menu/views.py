@@ -80,10 +80,10 @@ def delete_media_piece(querry, user):
     except MediaItem.DoesNotExist:
         pass
 
-def create_media_item(user, title, rating, slug):
+def create_media_item(user, title, rating, slug, index):
     
     RAWG_API_KEY = settings.RAWG_API_KEY
-    media_data = search_media(title, slug)[0]
+    media_data = search_media(title, slug)[index]
     try:
         release_date = datetime.datetime.strptime(media_data['release_date'], "%Y-%m-%d")
     except Exception as e:
@@ -170,12 +170,12 @@ def index(request, slug="films"):
         # ✅ Handle deletion
         if "delete_movie_id" in request.POST:
             delete_media_piece(request.POST.get("delete_movie_id"), user)
-        
+
         # ✅ Redirect to chosen section
         if "media_type" in request.POST:
             slug = request.POST.get("media_type")
             return redirect('rating_menu', slug=slug)
-        
+
         # ✅ Give the media/suggestions list        
         if "suggestion" in request.POST:
             suggestion = request.POST.get("suggestion") 
@@ -185,11 +185,11 @@ def index(request, slug="films"):
         if form.is_valid():
             title = form.cleaned_data['title']
             rating = form.cleaned_data['rating']
-            create_media_item(user, title,rating,slug)
+            obj_index = form.cleaned_data['index']
+            create_media_item(user, title,rating,slug, obj_index)
         else:
             error = "form error."
-            
-    # def get()
+
     if request.method == "GET":
         # ✅ Show suggestions in modal window
         if "q" in request.GET:
