@@ -23,14 +23,14 @@
 }
 #header_buttons button:hover {
     background-color: var(--header-buttons-hover-bg) !important;
-    color: #DBDBDB !important;
+    color: var(--text);
     transition: all 500ms ease;
     font-size: xx-large;
 }
 
 #header_buttons button.active {
     background-color: var(--header-buttons-hover-bg) !important;
-    color: #DBDBDB !important;
+    color: var(--text);
     font-size: xx-large !important;
 }
 

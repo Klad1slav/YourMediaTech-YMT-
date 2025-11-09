@@ -100,7 +100,7 @@ document.querySelectorAll('.star-display').forEach(container => {
 
     const star = document.createElement('span');
     star.innerHTML = `
-      <svg width="75" height="75" viewBox="0 0 50 50" fill="none" stroke="currentColor">
+      <svg width="40" height="40" viewBox="0 0 50 50" stroke="currentColor">
         <defs>
           <linearGradient id="half-static-${i}">
             <stop offset="50%" stop-color="#FFD700"/>
@@ -108,8 +108,7 @@ document.querySelectorAll('.star-display').forEach(container => {
           </linearGradient>
         </defs>
         <polygon
-          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02
-                  12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+          points="25,1 31,18 49,18 35,29 40,46 25,36 10,46 15,29 1,18 19,18"
           fill="${starClass === 'full' ? '#FFD700' : starClass === 'half' ? 'url(#half-static-'+i+')' : '#ccc'}"
         />
       </svg>
@@ -125,6 +124,7 @@ const suggestionsModal = document.getElementById('suggestions_modal');
 if (modalInput || suggestionsModal) {
   modalInput.addEventListener('input', function () {
     const query = modalInput.value.trim();
+    const maxLength = 30;
     suggestionsModal.innerHTML = '';
     if (query.length === 0) {
       suggestionsModal.style.display = 'none';
@@ -144,7 +144,7 @@ if (modalInput || suggestionsModal) {
           newSuggestions.forEach(li => {
             const newLi = document.createElement('li');
             newLi.className = 'list-group-item';
-            newLi.textContent = li.textContent;
+            newLi.textContent = li.textContent < maxLength? li.textContent: li.textContent.slice(0, maxLength);
             newLi.setAttribute('data-title', li.getAttribute('data-title'));
             newLi.onclick = function () {
               modalInput.value = newLi.textContent;
@@ -168,6 +168,7 @@ let description_data = "";
 let curentIndex = 0;
 
 if (suggestionsModal) {
+  const maxLength = 50;
   const modalImg = document.querySelector('#modal-form img');
   const modalTitle = document.querySelector('#gallery-title');
   const nextButton = document.querySelector('#next-btn');
@@ -184,7 +185,7 @@ if (suggestionsModal) {
           curentIndex = 0;
           description_data = data;
 
-          modalTitle.textContent = data[curentIndex].title;
+          modalTitle.textContent = data[curentIndex].title.length < maxLength ? data[curentIndex].title: data[curentIndex].title.slice(0,maxLength)+ '...';
           modalImg.src = data[curentIndex].poster_path;
           modalImg.alt = data[curentIndex].title;
           suggestionsModal.style.display = 'none';

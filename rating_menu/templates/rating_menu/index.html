@@ -1,71 +1,49 @@
 {% extends "base.html" %}
-{%load static%}
+{% load static %}
 
-{%block title%}
-{{slug}}
-{%endblock%}
-{%block css_files%}
-  <link rel="stylesheet" href="{%static "rating_menu/styles/others.css"%}">
-  <link rel="stylesheet" href="{%static "rating_menu/styles/buttons.css"%}">
+{% block title %}
+{{ slug }}
+{% endblock %}
+
+{% block css_files %}
+  <link rel="stylesheet" href="{% static "rating_menu/styles/others.css" %}">
+  <link rel="stylesheet" href="{% static "rating_menu/styles/buttons.css" %}">
+  <link href="{% static "rating_menu/styles/mobile.css" %}" rel="stylesheet" media="only screen and (max-width: 935px)">
   <script src="{% static 'rating_menu/scripts.js' %}" defer></script>
-{%endblock%}
+{% endblock %}
 
-{%block content%}
-  <div class="sidebar">
-    <!-- Dropdown menu at the top -->
-    <div class="sidebar-dropdown p-3">
-      <div class="dropdown" id="sidebarDropdown">
-        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="sidebarMenuDropdown"
-          data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="false"
-          style="background-color:#434B51; color:#fff; border:none;">
-          Menu
-        </button>
-        <div class="dropdown-menu w-100 p-0" aria-labelledby="sidebarMenuDropdown" style="background-color:#222c36; max-height: 250px; overflow-y: auto;">
-          <ul class="list-unstyled mb-0" id="main-menu">
-            <li><a class="dropdown-item text-light" href="#" data-submenu="genre">Genre</a></li>
-            <li><a class="dropdown-item text-light" href="#" data-submenu="year">Year</a></li>
-            <li><a class="dropdown-item text-light" href="#" data-submenu="country">Country</a></li>
-          </ul>
-          <ul class="list-unstyled mb-0 d-none" id="submenu-list">
-            <!-- Submenu options will be injected here -->
-          </ul>
-        </div>
-      </div>
-    </div>
+{% block content %}
+<div class="sidebar">
+  {% include "includes/header_buttons.html" %}
+</div>
 
-
-
-    
-    {% include "includes/header_buttons.html" %}
-  </div>
-
-  <main class="main-content">
-    <div class="input-group mb-3 position-relative" style="max-width: 500px;">
-      <span class="input-group-text" id="search-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
-        </svg>
-      </span>
-      <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="search-icon">
-      <button type="button" class="btn btn-success js-show-form">Add new</button>
-      <form method="post" id="suggestion-form" autocomplete="off">
-        {% csrf_token %}
-        <input type="hidden" name="suggestion" id="suggestion-input">
-        <ul id="suggestions" class="list-group mt-2" style="display:none;">
-            {% for movie in movies|slice:":6" %}
-                <li class="list-group-item" data-title="{{ movie.title }}">{{ movie.title }}</li>
-            {% endfor %}
-        </ul>
+<main class="main-content">
+  <div class="input-group mb-3 position-relative">
+    <span class="input-group-text" id="search-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.106a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+      </svg>
+    </span>
+    <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="search-icon">
+    <button type="button" class="btn btn-success js-show-form">Add new</button>
+    <form method="post" id="suggestion-form" autocomplete="off">
+      {% csrf_token %}
+      <input type="hidden" name="suggestion" id="suggestion-input">
+      <ul id="suggestions" class="list-group mt-2" style="display:none;">
+        {% for movie in movies|slice:":6" %}
+          <li class="list-group-item" data-title="{{ movie.title }}">{{ movie.title }}</li>
+        {% endfor %}
+      </ul>
     </form>
-    </div>
-        
-    {% for movie in page_obj %}
-<div class="media-content d-flex mb-4" style="gap: 10px; align-items: stretch; min-height: 350px;">
+  </div>
+    
+  {% for movie in page_obj %}
+<div class="media-content d-flex mb-4">
 
   <!-- Poster -->
   <div class="movie">
     <img src="{{ movie.poster_url }}"
-         class="img-fluid" style="max-width: 250px; height: 350px; object-fit: cover;" alt="{{ movie.title }}">
+         class="img-fluid" alt="{{ movie.title }}">
   </div>
 
   <!-- Info -->
@@ -78,18 +56,16 @@
       <p><strong>Add at: </strong>{{ movie.created_at }}</p>
       <p><strong>Release date: </strong>{{ movie.year }}</p>
       <p><strong>Genres: </strong>{{ movie.genre }}</p>
-    </div>
+      </div>
 
-    <!-- Bottom right -->
-    <div style="position: absolute; top: 300px; right: 10px; display:flex;">
-      <div class="star-display me-2" data-rating="{{ movie.rating }}"></div>
-      <form  method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="delete_movie_id" value="{{ movie.id }}">
-        <button type="submit" id="delete_movie_item" class="btn btn-danger btn-sm">Delete</button>
-      </form>
-    </div>
-
+            <div id="rating-and-delete" class=" d-flex justify-content-end">
+        <div class="star-display d-flex justify-content-end gap-2 mt-4" data-rating="{{ movie.rating }}"></div>
+        <form  method="POST" class="d-flex justify-content-end">
+          {% csrf_token %}
+          <input type="hidden" name="delete_movie_id" value="{{ movie.id }}">
+          <button type="submit" id="delete_movie_item" class="btn btn-danger mb-0">Delete</button>
+        </form>
+      </div>
   </div>
 </div>
 {% endfor %}
@@ -202,7 +178,7 @@
   </ul>
 </nav>
 <h1 color="white">{{suggestions}}</h1>
-{%endblock%}
+{% endblock %}
 
 
 {% comment %}       <table>

@@ -1,0 +1,11 @@
+    #logo {
+        font-size: 8rem; /* Scales down the main logo */
+    }
+
+    #sub_logo {
+        font-size: 3rem; /* Scales down the sub-logo */
+    }
+
+    #main-div {
+        padding: 1rem; /* Adds a bit of spacing for smaller screens */
+    }

@@ -1,0 +1,75 @@
+/* Recommendations Section */
+#recommendations {
+    flex-direction: column;
+    margin-top: 1.5rem;
+    align-items: center;
+}
+
+.film-row {
+    flex-direction: column;
+    margin-top: 2rem;
+    align-items: center;
+}
+
+.name {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.movie {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.movie-info {
+    max-width: 100%;
+    text-align: center;
+}
+
+.movie img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.media-card {
+    width: 100%;
+    border-radius: 8px;
+    background-color: var(--media-item-card-bg);
+    color: var(--text);
+}
+
+.media-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.media-card .card-body .release-date-container {
+    margin-top: auto;
+}
+
+.pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.pagination .page-link {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+.game-poster {
+    width: 200px;
+    height: 280px;
+}
+
+.other-poster {
+    width: 100%;
+}
+
+.name, .movie-info, .media-card .card-body {
+    font-size: 0.9rem;
+}

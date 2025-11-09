@@ -1,0 +1,7 @@
+
+    .register-container,
+    .login-container {
+        width: 80%;         /* scale down container */
+        padding: 30px;      /* slightly reduce padding */
+        margin: 50px auto;  /* adjust vertical spacing */
+    }

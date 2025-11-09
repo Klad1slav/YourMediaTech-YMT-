@@ -14,13 +14,11 @@
 
 #delete_movie_item {
     padding: 0.5rem;
-    display: inline-flex;
+    display: flex;
     height: auto;
-    align-items: center;
-    justify-content: center;
-}
-.movie-info{
-    margin-bottom: auto;
+    align-items: end;
+    justify-content: end;
+    margin-top: 10px;
 }
 .star-display {
     display: flex;

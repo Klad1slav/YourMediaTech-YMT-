@@ -2,6 +2,7 @@
 {% load static %}
 {% block css_files %}
     <link rel="stylesheet" href="{% static "home/home.css" %}">
+    <link href="{%static "home/mobile.css"%}" rel="stylesheet" media="only screen and (max-width: 935px)">
 {% endblock %}
 {% block content %}
 {%include "includes/header_buttons.html"%}

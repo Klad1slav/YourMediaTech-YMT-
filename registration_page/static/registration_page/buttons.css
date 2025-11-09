@@ -3,8 +3,8 @@
     border: none
 }
 .btn-primary:focus:active {
-    background-color: #DBDBDB !important;
-    color: #1D1D1D !important;
+    background-color: var(--log-in-bg) !important;
+    color: var(--log-in-color) !important;
 }
 
 .btn-success {

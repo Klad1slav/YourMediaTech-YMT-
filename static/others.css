@@ -24,7 +24,7 @@
 
     --media-item-card-bg: #434B51;
 
-    --text: #DBDBDB;
+    --text: #434B51;
 
     --sidebar: #e5e5e5;
     --input-bg: #fff;
@@ -60,4 +60,6 @@ footer{
     flex-direction: column;
 }
 
-
+h1,h2, p{
+    color: var(--text);
+}

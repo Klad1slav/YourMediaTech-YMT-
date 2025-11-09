@@ -65,9 +65,9 @@ def search_media(query, media_type)->list:
                 for item in results:
                     item['title'] = item['volumeInfo'].get('title', '')
                     item['overview'] = item['volumeInfo'].get('description', '')
-                    item['poster_path'] = item['volumeInfo']['imageLinks'].get('thumbnail', '')
+                    item['poster_path'] = item['volumeInfo']['imageLinks'].get('thumbnail', '') if 'imageLinks' in item['volumeInfo'] else "https://www.themoviedb.org/t/p/w1280/ponf6oGL9tE7l2EysogAiAD50hr.jpg"
                     item['genre'] = item['volumeInfo'].get('categories', '')
-                    item['release_date'] = item['volumeInfo'].get('publishedDate', '')
+                    item['release_date'] = item['volumeInfo'].get('publishedDate', '') if 'publishedDate' in item['volumeInfo'] else "2000-01-01"
                     item['id'] = item.get('id', '')
         return results
     except Exception as e:
@@ -83,18 +83,30 @@ def delete_media_piece(querry, user):
         pass
 
 def create_media_item(user, title, rating, slug, index):
-    
     MOVIE_API_KEY = settings.TMDB_API_KEY
     RAWG_API_KEY = settings.RAWG_API_KEY
     media_data = search_media(title, slug)[index]
-    try:
-        release_date = datetime.datetime.strptime(media_data['release_date'], "%Y-%m-%d")
-    except Exception as e:
-        release_date = datetime.datetime.strptime(media_data['release_date'], "%Y")
-        
+
+    date_formats = [
+        "%Y-%m-%d",  # e.g., 2023-11-09
+        "%Y-%m",     # e.g., 2023-11
+        "%Y",        # e.g., 2023
+        "%d-%m-%Y",  # e.g., 09-11-2023
+        "%m/%d/%Y"   # e.g., 11/09/2023
+    ]
+
+    if 'release_date' in media_data:
+        for fmt in date_formats:
+            try:
+                release_date = datetime.datetime.strptime(media_data['release_date'], fmt)
+                break  # Exit the loop if parsing is successful
+            except ValueError:
+                continue  
+    else:
+        release_date = '2000-01-01'
+
     match slug:
         case "films" | "series" | "toons" | "anime":
-            
             genres_urls = {
                 'films': f"https://api.themoviedb.org/3/genre/movie/list?api_key={MOVIE_API_KEY}&language=en",
                 'tv': f"https://api.themoviedb.org/3/genre/tv/list?api_key={MOVIE_API_KEY}&language=en",
@@ -104,48 +116,45 @@ def create_media_item(user, title, rating, slug, index):
                 response = requests.get(url_g)
                 data = response.json()
                 results = data.get('genres', [])
-                for object in results:
-                    genres_dict.append(object)
+                for obj in results:
+                    genres_dict.append(obj)
             genre = [genre["name"] for genre in genres_dict if genre['id'] in media_data['genre_ids']]
-            
+
             poster_url = "https://image.tmdb.org/t/p/w500" + media_data['poster_path']
-            for one_genre in genre:
-                pass
         case "games":
-            
             details_url = f"https://api.rawg.io/api/games/{media_data['id']}?key={RAWG_API_KEY}"
             details_response = requests.get(details_url)
-            
+
             if details_response.status_code != 200:
                 return []
             poster_url = media_data['poster_path']
             media_data['overview'] = details_response.json()['description_raw']
-            genre = media_data['genre']# type: ignore
+            genre = media_data['genre']  # type: ignore
         case "books":
-            poster_url = media_data['poster_path']# type: ignore
-            genre = media_data['genre']# type: ignore
-    # print(media_data)
+            poster_url = media_data['poster_path']  # type: ignore
+            genre = media_data['genre']  # type: ignore
     try:
-        if media_data:# type: ignore
-            with transaction.atomic(): #whether full success or full fail
+        if media_data:  # type: ignore
+            with transaction.atomic():  # whether full success or full fail
+                print('creation of media')
                 MediaItem.objects.create(
                     user=user,
-                    tmdb_id=media_data['id'],
-                    title=media_data['title'], # type: ignore
-                    description=media_data['overview'], # type: ignore
-                    poster_url=poster_url, # type: ignore
+                    # tmdb_id=media_data['id'],
+                    title=media_data['title'],  # type: ignore
+                    description=media_data['overview'],  # type: ignore
+                    poster_url=poster_url,  # type: ignore
                     rating=int(rating),
-                    # tmdb_id=game_data['id'],  # use as unique ID # type: ignore
-                    genre=genre, # type: ignore
-                    year= release_date, # type: ignore
+                    genre=genre,  # type: ignore
+                    year=release_date,  # type: ignore
                     type=slug,
-                    )
+                )
             return
         else:
             error = "Media doesn't exist in database."
     except Exception as e:
         error = f"Save error: {str(e)}"
-    return error #type:ignore
+        print(error)
+    return error  # type: ignore
 
 def show_suggestions_modal(slug, querry, request):
     suggestions = search_media(querry, slug)
