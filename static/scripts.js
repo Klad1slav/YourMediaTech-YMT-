@@ -1,5 +1,20 @@
 const djangoValue = document.title;
 
+window.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("theme");
+    const moon = document.getElementById("moonIcon");
+    const sun = document.getElementById("sunIcon");
+
+    if (savedTheme === "light") {
+        document.body.classList.add("light-mode");
+        moon.style.display = "none";
+        sun.style.display = "inline";
+    } else {
+        moon.style.display = "inline";
+        sun.style.display = "none";
+    }
+});
+
 // Only target buttons inside #header_buttons
 const headerButtons = document.querySelectorAll('#header_buttons button');
 headerButtons.forEach(btn => {
@@ -13,7 +28,21 @@ headerButtons.forEach(btn => {
 
 function toggleLight() {
     document.body.classList.toggle('light-mode');
+
+    const moon = document.getElementById("moonIcon");
+    const sun = document.getElementById("sunIcon");
+
+    if (document.body.classList.contains("light-mode")) {
+        localStorage.setItem("theme", "light");
+        moon.style.display = "none";
+        sun.style.display = "inline";
+    } else {
+        localStorage.setItem("theme", "dark");
+        moon.style.display = "inline";
+        sun.style.display = "none";
+    }
 }
+
 
 //Show suggestions
 
@@ -51,4 +80,3 @@ suggestionsList.addEventListener('click', function(e) {
         suggestionForm.submit();
     }
 });
-

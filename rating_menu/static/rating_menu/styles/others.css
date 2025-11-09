@@ -166,6 +166,35 @@ header {
   gap: 10px;
 }
 
+
+
+#modal-overlay .input-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  
+  width: 100%;
+  max-width: 400px; /* adjust as needed */
+}
+
+#modal-overlay .input-group-text {
+  flex-shrink: 0; /* prevent the icon from shrinking */
+}
+
+#modal-overlay input[type="text"] {
+  flex: 1; /* make the input fill the remaining space */
+  min-width: 0; /* prevents flexbox overflow issue */
+}
+
+#modal-overlay #suggestions_modal {
+  position: absolute;
+  top: 100%; /* appear just below the input */
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+
 .input-group.mb-3.position-relative {
   max-width: 500px;
 }

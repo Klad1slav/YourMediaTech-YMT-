@@ -121,7 +121,7 @@ def get_tmdb_recommendations(slug, user=None):
                     continue
 
                 # Search RAWG to get the game slug
-                search_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={title}&page_size=1"
+                search_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={title}&page_size=20"
                 search_resp = requests.get(search_url)
                 if search_resp.status_code != 200:
                     continue
@@ -140,7 +140,7 @@ def get_tmdb_recommendations(slug, user=None):
 
                 # Fetch top-rated games in the same genres
                 genre_query = ",".join(genres)
-                recommend_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&genres={genre_query}&ordering=-rating&page_size=10"
+                recommend_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&genres={genre_query}&ordering=-rating&page_size=20"
                 recommend_resp = requests.get(recommend_url)
                 if recommend_resp.status_code != 200:
                     continue
@@ -188,12 +188,12 @@ def get_tmdb_recommendations(slug, user=None):
                     continue
                 # Search for similar books based on title keywords
                 query = title.split()[0]  # use first word as base query
-                search_url = f"https://www.googleapis.com/books/v1/volumes?q={query}&key={GOOGLE_API_KEY}&maxResults=5&langRestrict=en"
+                search_url = f"https://www.googleapis.com/books/v1/volumes?q={query}&key={GOOGLE_API_KEY}&maxResults=20&langRestrict=en"
                 search_resp = requests.get(search_url)
                 if search_resp.status_code != 200:
                     continue
                 data = search_resp.json()
-                for b in data.get("items", [])[:20]:
+                for b in data.get("items", ):
                     book_id = b.get("id")
                     if not book_id or book_id in seen_ids:
                         continue
